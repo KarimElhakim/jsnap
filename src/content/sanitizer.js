@@ -1,18 +1,22 @@
 /**
  * DOM sanitizer for JSnap content scripts.
  *
- * Strips boilerplate (nav, ads, scripts) from a cloned document and converts
- * the remaining semantic content into a markdown-ish text representation that
- * the chunker can split on headings. Never reads storage or API keys.
+ * Strategy: two-pass. The aggressive pass is the preferred output (semantic,
+ * markdown-ish, ad-stripped). If it returns too little content, we fall back
+ * to a light pass that only strips scripts/styles/iframes and returns
+ * whitespace-collapsed innerText. That fallback is what lets us still work
+ * on older sites, heavily-styled layouts, and pages that wrap their content
+ * in ways the aggressive pass does not recognise.
+ *
+ * Never reads storage or API keys.
  */
 
-const STRIP_TAGS = ['script', 'style', 'noscript', 'iframe', 'svg', 'template'];
+const STRIP_TAGS = ['script', 'style', 'noscript', 'svg', 'template'];
 const STRIP_STRUCTURAL = ['nav', 'aside', 'footer', 'header'];
 const STRIP_ROLES = ['navigation', 'banner', 'contentinfo', 'complementary'];
 
-// Matches common ad/cookie/consent/social class and id fragments
 const NOISE_PATTERN =
-  /\b(ad[-_]|ads[-_]|cookie|consent|gdpr|share[-_]|social[-_]|related[-_]|promoted|sponsor|newsletter|popup|modal|overlay)\b/i;
+  /\b(cookie|consent|gdpr|newsletter[-_]signup|social[-_]share|share[-_]bar|promoted|sponsor|popup|modal|overlay)\b/i;
 
 const HEADING_PREFIX = {
   h1: '# ',
@@ -23,27 +27,30 @@ const HEADING_PREFIX = {
   h6: '###### ',
 };
 
+const AGGRESSIVE_MIN_CHARS = 300;
+
 function hasHiddenStyle(el) {
-  const style = el.getAttribute('style');
+  const style = el.getAttribute?.('style');
   if (!style) return false;
   return /display\s*:\s*none|visibility\s*:\s*hidden/i.test(style);
 }
 
+function classString(el) {
+  const cls = el.className;
+  if (!cls) return '';
+  if (typeof cls === 'string') return cls;
+  if (typeof cls.baseVal === 'string') return cls.baseVal;
+  return '';
+}
+
 function isNoise(el) {
-  const id = el.id ?? '';
-  const cls = el.className && typeof el.className === 'string' ? el.className : '';
-  return NOISE_PATTERN.test(id) || NOISE_PATTERN.test(cls);
+  return NOISE_PATTERN.test(el.id ?? '') || NOISE_PATTERN.test(classString(el));
 }
 
 function removeAll(root, selector) {
   root.querySelectorAll(selector).forEach((el) => el.remove());
 }
 
-/**
- * Converts semantic DOM nodes to a markdown-ish text representation.
- * @param {Element} root
- * @returns {string}
- */
 function extractText(root) {
   const parts = [];
 
@@ -61,6 +68,14 @@ function extractText(root) {
     if (prefix) {
       const t = node.textContent.trim();
       if (t) parts.push(prefix + t);
+      return;
+    }
+
+    if (tag === 'pre' || tag === 'code') {
+      const t = node.textContent;
+      if (t && t.trim()) {
+        parts.push(tag === 'pre' ? `\n\`\`\`\n${t}\n\`\`\`\n` : `\`${t.trim()}\``);
+      }
       return;
     }
 
@@ -88,7 +103,6 @@ function extractText(root) {
       return;
     }
 
-    // Recurse into container elements
     for (const child of node.childNodes) walk(child);
   }
 
@@ -96,38 +110,54 @@ function extractText(root) {
   return parts.join('\n');
 }
 
-/**
- * @param {Document} doc  The live page document.
- * @returns {{ text: string, title: string, url: string, meta: string }}
- */
-export function sanitize(doc) {
+function aggressivePass(doc) {
   const clone = doc.cloneNode(true);
 
-  // Strip non-content tags
   for (const tag of STRIP_TAGS) removeAll(clone, tag);
   for (const tag of STRIP_STRUCTURAL) removeAll(clone, tag);
   for (const role of STRIP_ROLES) removeAll(clone, `[role="${role}"]`);
 
-  // Strip hidden elements
   removeAll(clone, '[hidden]');
   removeAll(clone, '[aria-hidden="true"]');
   clone.querySelectorAll('*').forEach((el) => {
     if (hasHiddenStyle(el)) el.remove();
   });
 
-  // Strip noise selectors (ads, cookie banners, etc.)
   clone.querySelectorAll('[id], [class]').forEach((el) => {
     if (isNoise(el)) el.remove();
   });
 
   const body = clone.body ?? clone;
-  const rawText = extractText(body);
-  const text = rawText.replace(/\n{3,}/g, '\n\n').trim();
+  return extractText(body).replace(/\n{3,}/g, '\n\n').trim();
+}
+
+function lightPass(doc) {
+  const clone = doc.cloneNode(true);
+  for (const tag of STRIP_TAGS) removeAll(clone, tag);
+  removeAll(clone, 'iframe');
+  const body = clone.body ?? clone;
+  const raw = body.innerText ?? body.textContent ?? '';
+  return raw.replace(/[ \t]+\n/g, '\n').replace(/\n{3,}/g, '\n\n').trim();
+}
+
+/**
+ * @param {Document} doc
+ * @returns {{ text: string, title: string, url: string, meta: string, stats: object }}
+ */
+export function sanitize(doc) {
+  const aggressive = aggressivePass(doc);
+  const useAggressive = aggressive.length >= AGGRESSIVE_MIN_CHARS;
+  const text = useAggressive ? aggressive : lightPass(doc);
 
   return {
     text,
     title: doc.title ?? '',
     url: doc.location?.href ?? '',
     meta: doc.querySelector('meta[name="description"]')?.getAttribute('content') ?? '',
+    stats: {
+      aggressiveChars: aggressive.length,
+      finalChars: text.length,
+      passUsed: useAggressive ? 'aggressive' : 'light',
+    },
   };
 }

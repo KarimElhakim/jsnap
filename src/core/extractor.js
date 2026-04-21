@@ -31,7 +31,8 @@ export async function extract(args) {
   if (!pageText || pageText.trim().length < MIN_USEFUL_CONTENT_CHARS) {
     throw new ContentTooLargeError(
       ERROR_CODES.CONTENT_EMPTY,
-      'Page had no meaningful text after sanitization',
+      `Page had no meaningful text after sanitization (got ${pageText?.trim().length ?? 0} chars)`,
+      { context: { charCount: pageText?.trim().length ?? 0, url: pageUrl } },
     );
   }
 
