@@ -2,9 +2,11 @@ import { useI18n } from '../hooks/useI18n.js';
 
 const ERROR_CODE_TO_I18N_KEY = {
   'config.missing_key': 'error_config_missing_key',
+  'config.invalid': 'error_config_missing_key',
   'provider.auth': 'error_provider_auth',
   'provider.rate_limit': 'error_provider_rate_limit',
   'provider.network': 'error_provider_network',
+  'provider.timeout': 'error_provider_network',
   'provider.failed': 'error_provider_failed',
   'provider.unknown': 'error_provider_failed',
   'schema.unrepairable': 'error_schema_unrepairable',
@@ -12,6 +14,7 @@ const ERROR_CODE_TO_I18N_KEY = {
   'content.too_large': 'error_content_too_large',
   'content.empty': 'error_content_empty',
   cancelled: 'error_cancelled',
+  internal: 'error_generic',
 };
 
 const STAGE_LABELS = {
@@ -34,6 +37,7 @@ export function StatusBar({ phase, progress, error }) {
 
   if (phase === 'error' && error) {
     const i18nKey = ERROR_CODE_TO_I18N_KEY[error.code] ?? 'error_generic';
+    const detail = error.message && error.message !== t(i18nKey) ? error.message : null;
     return (
       <div
         role="alert"
@@ -44,9 +48,17 @@ export function StatusBar({ phase, progress, error }) {
           color: 'var(--color-danger)',
           fontSize: '12px',
           fontWeight: 500,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '4px',
         }}
       >
-        {t(i18nKey)}
+        <span>{t(i18nKey)}</span>
+        {detail && (
+          <span style={{ fontSize: '10.5px', fontWeight: 400, opacity: 0.8, fontFamily: 'monospace' }}>
+            {error.code}: {detail}
+          </span>
+        )}
       </div>
     );
   }

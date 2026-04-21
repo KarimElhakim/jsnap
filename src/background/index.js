@@ -15,7 +15,12 @@ import { extract } from '../core/extractor.js';
 import { logger } from '../core/logger.js';
 import { createDispatcher, MESSAGE_TYPES, message } from './router.js';
 import { createProvider, listProviders } from '../providers/factory.js';
-import { ERROR_CODES, ConfigError, JSnapError, toJSnapError } from '../core/errors.js';
+import {
+  ERROR_CODES,
+  ConfigError,
+  JSnapError,
+  toJSnapError,
+} from '../core/errors.js';
 
 import '../providers/gemini.js';
 import '../providers/groq.js';
@@ -23,6 +28,15 @@ import '../providers/ollama.js';
 import '../providers/openai-compatible.js';
 
 const inFlight = new Map();
+const RESTRICTED_URL_PATTERNS = [
+  /^chrome:\/\//i,
+  /^chrome-extension:\/\//i,
+  /^edge:\/\//i,
+  /^about:/i,
+  /^view-source:/i,
+  /^https:\/\/chromewebstore\.google\.com\//i,
+  /^https:\/\/chrome\.google\.com\/webstore\//i,
+];
 
 const { on, listener } = createDispatcher();
 
@@ -59,10 +73,7 @@ on(MESSAGE_TYPES.CANCEL_REQUEST, ({ requestId }) => {
 on(MESSAGE_TYPES.EXTRACT_REQUEST, async (payload) => {
   const { tabId, providerId, hint, requestId } = payload ?? {};
   if (!tabId || !providerId || !requestId) {
-    throw new ConfigError(
-      ERROR_CODES.CONFIG_INVALID,
-      'tabId, providerId, and requestId are required',
-    );
+    throw new ConfigError(ERROR_CODES.CONFIG_INVALID, 'tabId, providerId, and requestId are required');
   }
   runExtraction({ tabId, providerId, hint, requestId }).catch((err) => {
     logger.error('Extraction rejected unexpectedly', err);
@@ -74,23 +85,23 @@ async function runExtraction({ tabId, providerId, hint, requestId }) {
   const controller = new AbortController();
   inFlight.set(requestId, controller);
 
-  const push = (type, payload) => {
-    Platform.runtime.sendMessage(message(type, { requestId, ...payload })).catch(() => {
-      /* popup may have closed — harmless */
-    });
+  const push = (type, extra) => {
+    Platform.runtime.sendMessage(message(type, { requestId, ...extra })).catch(() => {});
   };
 
   try {
     push(MESSAGE_TYPES.EXTRACT_PROGRESS, { stage: 'fetching', pct: 0.05 });
 
-    const pageResponse = await Platform.tabs.sendMessage(tabId, { type: 'GET_PAGE_CONTENT' });
-    if (!pageResponse?.ok) {
+    const tab = await Platform.tabs.get(tabId).catch(() => null);
+    if (tab?.url && RESTRICTED_URL_PATTERNS.some((re) => re.test(tab.url))) {
       throw new JSnapError(
         ERROR_CODES.CONTENT_EMPTY,
-        pageResponse?.error ?? 'Content script returned no data',
+        'This page does not allow extensions. Try a regular website.',
+        { context: { url: tab.url, reason: 'restricted_url' } },
       );
     }
-    const page = pageResponse.data;
+
+    const page = await fetchPageContent(tabId);
 
     const providerConfig = (await Settings.getProviderConfig(providerId)) ?? {};
     const provider = createProvider(providerId, providerConfig);
@@ -121,6 +132,50 @@ async function runExtraction({ tabId, providerId, hint, requestId }) {
   } finally {
     inFlight.delete(requestId);
   }
+}
+
+async function fetchPageContent(tabId) {
+  try {
+    const response = await Platform.tabs.sendMessage(tabId, { type: 'GET_PAGE_CONTENT' });
+    if (response?.ok) return response.data;
+    throw new JSnapError(ERROR_CODES.CONTENT_EMPTY, response?.error ?? 'Content script returned no data');
+  } catch (err) {
+    const msg = String(err?.message ?? err);
+    if (!msg.includes('Could not establish connection') && !msg.includes('Receiving end does not exist')) {
+      throw err;
+    }
+  }
+
+  logger.info('Content script not present; injecting on demand', { tabId });
+
+  const contentScriptPath = findContentScriptPath();
+  if (!contentScriptPath) {
+    throw new JSnapError(
+      ERROR_CODES.CONTENT_EMPTY,
+      'Could not locate the content script in the extension bundle.',
+      { context: { reason: 'content_script_not_found' } },
+    );
+  }
+
+  try {
+    await Platform.scripting.executeScript({ target: { tabId }, files: [contentScriptPath] });
+  } catch (err) {
+    throw new JSnapError(
+      ERROR_CODES.CONTENT_EMPTY,
+      'Unable to access this page. Try reloading the tab, or open a regular website.',
+      { context: { reason: 'inject_failed', detail: String(err?.message ?? err) } },
+    );
+  }
+
+  const response = await Platform.tabs.sendMessage(tabId, { type: 'GET_PAGE_CONTENT' });
+  if (response?.ok) return response.data;
+  throw new JSnapError(ERROR_CODES.CONTENT_EMPTY, response?.error ?? 'Content script returned no data after injection');
+}
+
+function findContentScriptPath() {
+  const manifest = Platform.runtime.getManifest();
+  const entry = manifest?.content_scripts?.[0]?.js?.[0];
+  return entry ?? null;
 }
 
 globalThis.addEventListener?.('install', () => {
