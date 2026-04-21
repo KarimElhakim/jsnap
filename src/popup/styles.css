@@ -257,6 +257,136 @@ textarea {
   cursor: not-allowed;
 }
 
+/* ── Tabs (top bar) ────────────────────────────────────────────────────────── */
+.app__topbar {
+  display: flex;
+  gap: 4px;
+  border-bottom: 1px solid var(--color-border);
+  margin-bottom: 6px;
+}
+
+.tab {
+  background: transparent;
+  border: none;
+  color: var(--color-text-muted);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 6px 10px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+}
+
+.tab:hover {
+  color: var(--color-text);
+}
+
+.tab--active {
+  color: var(--color-primary);
+  border-bottom-color: var(--color-primary);
+  font-weight: 600;
+}
+
+/* ── History panel ─────────────────────────────────────────────────────────── */
+.history {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 420px;
+}
+
+.history__header {
+  display: flex;
+  gap: 4px;
+}
+
+.history__search {
+  flex: 1;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+  border-radius: var(--radius-sm);
+  padding: 5px 8px;
+  font-size: 12px;
+  font-family: inherit;
+}
+
+.history__search:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 1px;
+}
+
+.history__empty {
+  padding: 16px 8px;
+  text-align: center;
+  font-size: 11px;
+  color: var(--color-text-muted);
+}
+
+.history__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow-y: auto;
+  max-height: 350px;
+}
+
+.history__item {
+  display: flex;
+  gap: 4px;
+  align-items: stretch;
+}
+
+.history__entry {
+  flex: 1;
+  text-align: left;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+  border-radius: var(--radius-sm);
+  padding: 6px 8px;
+  font-family: inherit;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.history__entry:hover {
+  background: color-mix(in srgb, var(--color-primary) 10%, var(--color-surface));
+}
+
+.history__title {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.history__meta {
+  font-size: 10px;
+  color: var(--color-text-muted);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.history__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
 /* ── Spinner ───────────────────────────────────────────────────────────────── */
 @keyframes spin {
   to {

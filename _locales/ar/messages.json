@@ -47,6 +47,20 @@
 
   "popup_donate_text": { "message": "دعم JSnap" },
 
+  "popup_tab_extract": { "message": "استخراج" },
+  "popup_tab_history": { "message": "السجل" },
+
+  "popup_snap_all_tabs": { "message": "استخراج جميع التبويبات المفتوحة في هذه النافذة كأرشيف JSON واحد." },
+  "popup_snap_all_tabs_short": { "message": "كل التبويبات" },
+
+  "popup_history_search": { "message": "البحث في السجل…" },
+  "popup_history_refresh": { "message": "تحديث" },
+  "popup_history_clear": { "message": "مسح الكل" },
+  "popup_history_clear_confirm": { "message": "حذف سجل الاستخراج بالكامل؟ لا يمكن التراجع." },
+  "popup_history_delete": { "message": "حذف" },
+  "popup_history_loading": { "message": "جاري التحميل…" },
+  "popup_history_empty": { "message": "لا توجد عمليات استخراج محفوظة بعد. سيظهر عملك هنا." },
+
   "options_title": { "message": "إعدادات JSnap" },
   "options_provider_heading": { "message": "مزودو الذكاء الاصطناعي" },
   "options_api_key_label": { "message": "مفتاح API" },

@@ -47,6 +47,20 @@
 
   "popup_donate_text": { "message": "JSnap unterstützen" },
 
+  "popup_tab_extract": { "message": "Extrahieren" },
+  "popup_tab_history": { "message": "Verlauf" },
+
+  "popup_snap_all_tabs": { "message": "Alle geöffneten Tabs dieses Fensters als ein JSON-Archiv extrahieren." },
+  "popup_snap_all_tabs_short": { "message": "Alle Tabs" },
+
+  "popup_history_search": { "message": "Verlauf durchsuchen…" },
+  "popup_history_refresh": { "message": "Aktualisieren" },
+  "popup_history_clear": { "message": "Alle löschen" },
+  "popup_history_clear_confirm": { "message": "Gesamten Extraktionsverlauf löschen? Diese Aktion kann nicht rückgängig gemacht werden." },
+  "popup_history_delete": { "message": "Löschen" },
+  "popup_history_loading": { "message": "Wird geladen…" },
+  "popup_history_empty": { "message": "Noch keine gespeicherten Extraktionen. Ihre Arbeit erscheint hier." },
+
   "options_title": { "message": "JSnap-Einstellungen" },
   "options_provider_heading": { "message": "KI-Anbieter" },
   "options_api_key_label": { "message": "API-Schlüssel" },

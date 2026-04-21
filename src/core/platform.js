@@ -113,4 +113,36 @@ export const Platform = {
       return chromeApi?.i18n?.getUILanguage?.() ?? 'en';
     },
   },
+
+  commands: {
+    onCommand: {
+      addListener(handler) {
+        assertChrome();
+        chromeApi.commands?.onCommand.addListener(handler);
+      },
+    },
+  },
+
+  contextMenus: {
+    create(props) {
+      assertChrome();
+      try {
+        chromeApi.contextMenus?.create(props);
+      } catch {
+        // Creation can throw if the id already exists on SW restart; ignore.
+      }
+    },
+    removeAll() {
+      return new Promise((resolve) => {
+        if (!chromeApi?.contextMenus) return resolve();
+        chromeApi.contextMenus.removeAll(() => resolve());
+      });
+    },
+    onClicked: {
+      addListener(handler) {
+        assertChrome();
+        chromeApi.contextMenus?.onClicked.addListener(handler);
+      },
+    },
+  },
 };

@@ -47,6 +47,20 @@
 
   "popup_donate_text": { "message": "Soutenir JSnap" },
 
+  "popup_tab_extract": { "message": "Extraire" },
+  "popup_tab_history": { "message": "Historique" },
+
+  "popup_snap_all_tabs": { "message": "Extraire tous les onglets ouverts dans cette fenêtre en une seule archive JSON." },
+  "popup_snap_all_tabs_short": { "message": "Tous les onglets" },
+
+  "popup_history_search": { "message": "Rechercher dans l'historique…" },
+  "popup_history_refresh": { "message": "Actualiser" },
+  "popup_history_clear": { "message": "Tout effacer" },
+  "popup_history_clear_confirm": { "message": "Supprimer tout l'historique des extractions ? Cette action est irréversible." },
+  "popup_history_delete": { "message": "Supprimer" },
+  "popup_history_loading": { "message": "Chargement…" },
+  "popup_history_empty": { "message": "Aucune extraction enregistrée. Votre travail récent apparaîtra ici." },
+
   "options_title": { "message": "Paramètres JSnap" },
   "options_provider_heading": { "message": "Fournisseurs d'IA" },
   "options_api_key_label": { "message": "Clé API" },

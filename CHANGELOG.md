@@ -6,6 +6,31 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-04-21
+
+### Added
+
+- **Keyboard shortcut** `Alt+J` extracts the current page in Raw mode without opening the popup.
+- **Context menu entries**: right-click any page → _"Extract page to JSON (JSnap)"_; right-click a text selection → _"Extract selection to JSON (JSnap)"_. Both use Raw mode, no API key needed.
+- **Snap all tabs**: single click bundles every open tab in the current window (excluding restricted URLs) into one JSON archive: `{ kind: "jsnap-tab-archive", tabs: [{ url, title, data }, …], __meta }`. Perfect for capturing a research session in one shot.
+- **Local history** — every successful extraction is stored in `chrome.storage.local` (up to 100 entries, newest first). A new **History** tab in the popup lets you search by title/URL, open a past extraction, re-download it as JSON, or delete entries individually or all at once. Nothing leaves your browser.
+- **Markdown output** — the result view now has a JSON / MD toggle. Download as `.md` produces clean Markdown ready for Obsidian, Notion, or any Markdown-aware tool. Conversion is lossless-as-possible from the JSnap schema.
+- **Filename suggestions** — downloaded files are now named `jsnap-<page-title-slug>-<yyyy-mm-dd>.json` instead of the generic `jsnap-output.json`.
+- **Selection-narrowed Raw extraction** — when you trigger via the "Extract selection" context menu on Raw mode, the structured output is filtered to sections that contain the selected text.
+- **Real-time API call tracking**: every `provider.complete()` call is now counted. `__meta.apiCalls` is stamped on every result. The usage meter increments by the actual call count, not by logical extractions.
+- **Per-provider quota hints** in the usage meter: `N / 250 today` for Gemini Flash, `N / 14,400 today` for Groq's Llama 3.1 8B, unbounded for Ollama, unknown for OpenAI-compatible (user-configured endpoint).
+- **`__meta.schemaVersion = "2.1"`** on every Raw and LLM output — downstream tools can pin to a specific schema version.
+
+### Fixed
+
+- **Usage counter was severely under-reporting.** Previously Structure mode incremented once per extraction regardless of how many API calls were actually made; a single 50-section extraction showed as "1 request" while burning 50 of your daily quota. Now accurate to the call.
+- Git author attribution: all commits rewritten to use the correct GitHub noreply email so no unrelated contributor appears on the repo.
+
+### Changed
+
+- CI workflow simplified: build-only, no strict lint gate.
+- Usage meter is hidden in Raw mode (no quota to report).
+
 ## [0.2.0] - 2026-04-21
 
 ### Added
@@ -89,7 +114,8 @@ v0.1.x treated the LLM as the primary extractor. For the main use case ("transla
 - Settings page for provider selection, model selection, and API-key management.
 - MIT license, Buy Me a Coffee and GitHub Sponsors support links.
 
-[Unreleased]: https://github.com/KarimElhakim/jsnap/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/KarimElhakim/jsnap/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/KarimElhakim/jsnap/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/KarimElhakim/jsnap/compare/v0.1.2...v0.2.0
 [0.1.2]: https://github.com/KarimElhakim/jsnap/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/KarimElhakim/jsnap/compare/v0.1.0...v0.1.1

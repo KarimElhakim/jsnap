@@ -136,7 +136,11 @@ Keys live only in `chrome.storage.local` on your device. They go to the provider
           "heading": "GENERAL CONTROLS",
           "level": 2,
           "blocks": [
-            { "type": "code", "text": "Button:   Function:\nA         Accept/confirm...", "language": null }
+            {
+              "type": "code",
+              "text": "Button:   Function:\nA         Accept/confirm...",
+              "language": null
+            }
           ],
           "subsections": []
         }

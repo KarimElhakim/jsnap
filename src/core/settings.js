@@ -72,12 +72,13 @@ export const Settings = {
     return all.usage?.[providerId] ?? { date: null, count: 0 };
   },
 
-  async incrementUsage(providerId) {
+  async incrementUsage(providerId, by = 1) {
     const today = new Date().toISOString().slice(0, 10);
+    const delta = Math.max(1, Math.floor(Number(by) || 1));
     return Storage.update(SETTINGS_KEY, (current) => {
       const base = current ?? DEFAULT_SETTINGS;
       const prev = base.usage?.[providerId] ?? { date: today, count: 0 };
-      const count = prev.date === today ? prev.count + 1 : 1;
+      const count = prev.date === today ? prev.count + delta : delta;
       return deepMerge(base, { usage: { [providerId]: { date: today, count } } });
     });
   },

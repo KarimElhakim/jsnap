@@ -47,6 +47,20 @@
 
   "popup_donate_text": { "message": "Apoya JSnap" },
 
+  "popup_tab_extract": { "message": "Extraer" },
+  "popup_tab_history": { "message": "Historial" },
+
+  "popup_snap_all_tabs": { "message": "Extrae todas las pestañas abiertas en esta ventana como un único archivo JSON." },
+  "popup_snap_all_tabs_short": { "message": "Todas las pestañas" },
+
+  "popup_history_search": { "message": "Buscar en el historial…" },
+  "popup_history_refresh": { "message": "Actualizar" },
+  "popup_history_clear": { "message": "Borrar todo" },
+  "popup_history_clear_confirm": { "message": "¿Eliminar todo el historial de extracciones? Esta acción es irreversible." },
+  "popup_history_delete": { "message": "Eliminar" },
+  "popup_history_loading": { "message": "Cargando…" },
+  "popup_history_empty": { "message": "Aún no hay extracciones guardadas. Tu trabajo reciente aparecerá aquí." },
+
   "options_title": { "message": "Configuración de JSnap" },
   "options_provider_heading": { "message": "Proveedores de IA" },
   "options_api_key_label": { "message": "Clave API" },

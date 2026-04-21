@@ -96,6 +96,7 @@ async function singleShotExtract({
   onProgress?.({ stage: 'thinking', pct: 0.1 });
 
   const results = [];
+  let apiCalls = 0;
   for (let i = 0; i < chunks.length; i += 1) {
     if (signal?.aborted)
       throw new CancelledError(ERROR_CODES.CANCELLED, 'Cancelled during extraction');
@@ -123,6 +124,7 @@ async function singleShotExtract({
       responseFormat: prompt.responseFormat,
       signal,
     });
+    apiCalls += 1;
     results.push(validateAndParse(response.text));
     onProgress?.({ stage: 'thinking', pct: 0.1 + (0.8 * (i + 1)) / chunks.length });
   }
@@ -130,7 +132,13 @@ async function singleShotExtract({
   onProgress?.({ stage: 'parsing', pct: 0.95 });
 
   const merged = chunks.length === 1 ? results[0] : mergeSingleShotResults(results);
-  return stampMeta(merged, { pageUrl, userHint, mode, providerId: provider.constructor.id });
+  return stampMeta(merged, {
+    pageUrl,
+    userHint,
+    mode,
+    providerId: provider.constructor.id,
+    apiCalls,
+  });
 }
 
 async function sectionwiseExtract({
@@ -145,6 +153,7 @@ async function sectionwiseExtract({
 }) {
   const total = sections.length;
   const results = [];
+  let apiCalls = 0;
 
   for (let i = 0; i < total; i += 1) {
     if (signal?.aborted)
@@ -176,6 +185,7 @@ async function sectionwiseExtract({
       signal,
     });
 
+    apiCalls += 1;
     results.push(validateAndParse(response.text));
   }
 
@@ -193,6 +203,7 @@ async function sectionwiseExtract({
     mode,
     providerId: provider.constructor.id,
     sectionCount: total,
+    apiCalls,
   });
 }
 
@@ -205,14 +216,16 @@ function mergeSingleShotResults(results) {
   return out;
 }
 
-function stampMeta(result, { pageUrl, userHint, mode, providerId, sectionCount }) {
+function stampMeta(result, { pageUrl, userHint, mode, providerId, sectionCount, apiCalls }) {
   const meta = {
+    schemaVersion: '2.1',
     sourceUrl: pageUrl ?? null,
     extractedAt: new Date().toISOString(),
     userHint: (userHint ?? '').trim() || null,
     mode,
     promptVersion: PROMPT_VERSION,
     providerId,
+    ...(typeof apiCalls === 'number' ? { apiCalls } : {}),
     ...(sectionCount ? { sectionCount } : {}),
     ...(result?.__meta ?? {}),
   };

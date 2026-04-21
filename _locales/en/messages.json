@@ -46,6 +46,20 @@
 
   "popup_donate_text": { "message": "Support JSnap" },
 
+  "popup_tab_extract": { "message": "Extract" },
+  "popup_tab_history": { "message": "History" },
+
+  "popup_snap_all_tabs": { "message": "Extract every open tab in this window as one JSON archive." },
+  "popup_snap_all_tabs_short": { "message": "All tabs" },
+
+  "popup_history_search": { "message": "Search history…" },
+  "popup_history_refresh": { "message": "Refresh" },
+  "popup_history_clear": { "message": "Clear all" },
+  "popup_history_clear_confirm": { "message": "Delete all extraction history? This cannot be undone." },
+  "popup_history_delete": { "message": "Delete" },
+  "popup_history_loading": { "message": "Loading…" },
+  "popup_history_empty": { "message": "No saved extractions yet. Your recent work will appear here." },
+
   "options_title": { "message": "JSnap Settings" },
   "options_provider_heading": { "message": "API Providers" },
   "options_api_key_label": { "message": "API Key" },
