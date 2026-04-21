@@ -52,19 +52,11 @@ export function ResultView({ data }) {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          flexWrap: 'wrap',
-          gap: '4px',
-        }}
-      >
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
         <span style={{ fontWeight: 600, fontSize: '12px', color: 'var(--color-text-muted)' }}>
           {t('popup_result_title')}
         </span>
-        <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
+        <div class="actions-row">
           <button class="btn btn--ghost" onClick={handleCopy} title={t('popup_result_copy')}>
             <Copy size={12} />
             {copied.value ? t('popup_result_copied') : t('popup_result_copy')}

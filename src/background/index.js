@@ -84,7 +84,9 @@ on(MESSAGE_TYPES.EXTRACT_ALL_TABS, async (payload) => {
 async function runExtraction({ tabId, providerId, hint, mode, requestId, selectionText }) {
   const controller = new AbortController();
   inFlight.set(requestId, controller);
-  const autoDownload = requestId.startsWith('kb_') || requestId.startsWith('ctx_');
+  const fromKeyboard = requestId.startsWith('kb_');
+  const fromContext = requestId.startsWith('ctx_');
+  const autoDownload = fromKeyboard || fromContext;
 
   const push = (type, extra) => {
     Platform.runtime.sendMessage(message(type, { requestId, ...extra })).catch(() => {});
@@ -103,10 +105,26 @@ async function runExtraction({ tabId, providerId, hint, mode, requestId, selecti
     }
 
     let data;
-    if (mode === 'raw') {
+    let suffix = '';
+
+    // Context-menu "Save selected text" → emit the selection only, skip extraction.
+    if (fromContext && selectionText && selectionText.trim()) {
+      data = {
+        title: tab?.title ?? 'selection',
+        pageTitle: tab?.title ?? null,
+        pageUrl: tab?.url ?? null,
+        selectedText: selectionText,
+        __meta: {
+          schemaVersion: '2.1',
+          mode: 'selection',
+          extractedAt: new Date().toISOString(),
+          sourceUrl: tab?.url ?? null,
+        },
+      };
+      suffix = 'selection';
+    } else if (mode === 'raw') {
       push(MESSAGE_TYPES.EXTRACT_PROGRESS, { stage: 'thinking', pct: 0.5 });
       data = await fetchStructuredContent(tabId);
-      if (selectionText) narrowToSelection(data, selectionText);
       push(MESSAGE_TYPES.EXTRACT_PROGRESS, { stage: 'parsing', pct: 0.95 });
     } else {
       const page = await fetchPageContent(tabId);
@@ -131,7 +149,7 @@ async function runExtraction({ tabId, providerId, hint, mode, requestId, selecti
 
     if (autoDownload) {
       try {
-        await downloadResult(data, { format: 'json', saveAs: true });
+        await downloadResult(data, { format: 'json', saveAs: true, suffix });
         Platform.notifications.create({
           type: 'basic',
           iconUrl: Platform.runtime.getURL('icons/icon-128.png'),
@@ -139,7 +157,13 @@ async function runExtraction({ tabId, providerId, hint, mode, requestId, selecti
           message: `Saved: ${data?.title ?? tab?.title ?? 'page'}`,
         });
       } catch (err) {
-        logger.warn('Auto-download failed', err);
+        logger.error('Auto-download failed', err);
+        Platform.notifications.create({
+          type: 'basic',
+          iconUrl: Platform.runtime.getURL('icons/icon-128.png'),
+          title: 'JSnap — download failed',
+          message: String(err?.message ?? err),
+        });
       }
     }
 
@@ -227,26 +251,6 @@ async function runAllTabsExtraction(requestId) {
     logger.error('All-tabs extraction failed', normalized);
     push(MESSAGE_TYPES.EXTRACT_RESULT, { ok: false, error: normalized.toJSON() });
   }
-}
-
-function narrowToSelection(result, selectionText) {
-  if (!result || !selectionText) return;
-  const needle = selectionText.trim().toLowerCase();
-  if (!needle) return;
-  result.__meta = { ...(result.__meta ?? {}), selectionNarrowed: true };
-  if (!Array.isArray(result.sections)) return;
-  result.sections = result.sections.filter((s) => sectionMatches(s, needle));
-}
-
-function sectionMatches(section, needle) {
-  if (!section) return false;
-  if (section.heading?.toLowerCase().includes(needle)) return true;
-  for (const b of section.blocks ?? []) {
-    if (b?.text?.toLowerCase().includes(needle)) return true;
-    if (Array.isArray(b?.items) && b.items.some((i) => String(i).toLowerCase().includes(needle)))
-      return true;
-  }
-  return (section.subsections ?? []).some((s) => sectionMatches(s, needle));
 }
 
 async function saveToHistory(data) {

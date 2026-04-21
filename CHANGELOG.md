@@ -6,6 +6,25 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.4.1] - 2026-04-21
+
+### Fixed
+
+- **Auto-download actually works now.** Previously `URL.createObjectURL` was called from the background service worker, which is not available in MV3 SW — so `Alt+J` and context-menu triggers failed silently and only the History save succeeded. The download helper now detects the runtime context and falls back to a base64 data URL when the service worker path is taken. Errors that do occur are surfaced as desktop notifications instead of being swallowed.
+- **Snap all tabs works on tabs other than the active one.** Added `host_permissions: ["<all_urls>"]` to the manifest. Without it, `scripting.executeScript` was denied on every tab except the one the user was clicking through, which is why github.com and other tabs failed with "Unable to access this page" in the batch summary. Net permission surface is unchanged (the existing `content_scripts` declaration already requests the same scope).
+- **"Save selected text as JSON" now saves only the selected text.** The previous implementation ran a full page extraction and tried to filter sections by substring, which either returned too much or too little depending on how the selection matched sanitized content. New shape: `{ pageTitle, pageUrl, selectedText, __meta: { mode: 'selection' } }`. Filename pattern: `<page-title-slug>-selection-<date>.json`.
+- Auto-download errors are now logged as errors (not warnings) and surface a visible desktop notification with the failure reason.
+
+### Changed
+
+- Popup width raised from 360px to 400px so the Mode segmented control, the Extract + All-tabs row, and the Result action row all sit comfortably without compression.
+- Result action row refactored to a dedicated `.actions-row` utility class: `display: flex; flex-wrap: wrap; gap: 6px;`. Buttons wrap cleanly on narrow popups instead of clipping.
+- Segmented-control options get `text-overflow: ellipsis` so long labels don't spill out of their column.
+
+### Removed
+
+- `narrowToSelection` / `sectionMatches` helpers in `background/index.js` — superseded by the explicit selection-mode JSON shape.
+
 ## [0.4.0] - 2026-04-21
 
 ### Added
@@ -144,7 +163,8 @@ v0.1.x treated the LLM as the primary extractor. For the main use case ("transla
 - Settings page for provider selection, model selection, and API-key management.
 - MIT license, Buy Me a Coffee and GitHub Sponsors support links.
 
-[Unreleased]: https://github.com/KarimElhakim/jsnap/compare/v0.4.0...HEAD
+[Unreleased]: https://github.com/KarimElhakim/jsnap/compare/v0.4.1...HEAD
+[0.4.1]: https://github.com/KarimElhakim/jsnap/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/KarimElhakim/jsnap/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/KarimElhakim/jsnap/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/KarimElhakim/jsnap/compare/v0.1.2...v0.2.0
