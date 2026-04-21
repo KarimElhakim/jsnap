@@ -15,7 +15,7 @@ import { useI18n } from './hooks/useI18n.js';
 // Module-level signals — stable across re-renders, survive popup re-open.
 const providers = signal([]);
 const selectedProviderId = signal('');
-const mode = signal('structure');
+const mode = signal('raw');
 const hint = signal('');
 const phase = signal('idle'); // 'idle' | 'extracting' | 'done' | 'error'
 const progress = signal({ stage: '', pct: 0 });
@@ -27,12 +27,13 @@ const activeTabId = signal(null);
 const currentRequestId = signal(null);
 
 function resolveHasApiKey() {
+  if (mode.value === 'raw') return true;
   const s = settings.value;
   const pid = selectedProviderId.value;
   if (!s || !pid) return false;
   const cfg = s.providers?.[pid];
   if (!cfg) return false;
-  if (pid === 'ollama') return true; // Ollama is local; no key required
+  if (pid === 'ollama') return true;
   return !!cfg.apiKey?.trim();
 }
 
@@ -132,15 +133,6 @@ export function App() {
         </div>
       )}
 
-      <ProviderSelect
-        providers={providers.value}
-        value={selectedProviderId.value}
-        onChange={(id) => {
-          selectedProviderId.value = id;
-          refreshUsage(id);
-        }}
-      />
-
       <ModeSelect
         value={mode.value}
         onChange={(m) => {
@@ -148,6 +140,17 @@ export function App() {
         }}
         disabled={phase.value === 'extracting'}
       />
+
+      {mode.value !== 'raw' && (
+        <ProviderSelect
+          providers={providers.value}
+          value={selectedProviderId.value}
+          onChange={(id) => {
+            selectedProviderId.value = id;
+            refreshUsage(id);
+          }}
+        />
+      )}
 
       <HintInput
         value={hint.value}

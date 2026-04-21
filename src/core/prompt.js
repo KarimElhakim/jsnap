@@ -9,12 +9,14 @@
 export const PROMPT_VERSION = '1.2.0';
 
 export const MODES = Object.freeze({
+  RAW: 'raw',
   STRUCTURE: 'structure',
   SUMMARY: 'summary',
   DATA: 'data',
 });
 
-export const DEFAULT_MODE = MODES.STRUCTURE;
+export const DEFAULT_MODE = MODES.RAW;
+export const LLM_MODES = Object.freeze([MODES.STRUCTURE, MODES.SUMMARY, MODES.DATA]);
 
 const BASE_SYSTEM_PROMPT = [
   'You are JSnap, a precision page-to-JSON extractor. You receive the sanitized',

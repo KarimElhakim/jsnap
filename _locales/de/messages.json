@@ -10,11 +10,22 @@
   "popup_section_progress": { "message": "Abschnitt $1 von $2" },
 
   "popup_mode_label": { "message": "Modus" },
+  "popup_mode_raw": { "message": "Roh" },
+  "popup_mode_raw_badge": { "message": "kostenlos" },
   "popup_mode_structure": { "message": "Struktur" },
   "popup_mode_summary": { "message": "Zusammenfassung" },
   "popup_mode_data": { "message": "Daten" },
-  "popup_mode_help": {
-    "message": "Struktur erhält den vollständigen Text. Zusammenfassung verdichtet ihn. Daten extrahiert nur Tabellen und Spezifikationen."
+  "popup_mode_help_raw": {
+    "message": "Sofortige DOM-Analyse. Kein API-Schlüssel erforderlich."
+  },
+  "popup_mode_help_structure": {
+    "message": "Das LLM erhält den vollständigen Text abschnittsweise. Langsamer; verbraucht Ihr API-Kontingent."
+  },
+  "popup_mode_help_summary": {
+    "message": "Das LLM fasst die Seite in Kernpunkten zusammen."
+  },
+  "popup_mode_help_data": {
+    "message": "Das LLM extrahiert Tabellen, Preise, Spezifikationen; Prosa wird verworfen."
   },
 
   "popup_hint_label": { "message": "Hinweis (optional)" },

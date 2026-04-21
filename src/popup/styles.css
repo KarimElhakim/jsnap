@@ -209,6 +209,23 @@ textarea {
   gap: 2px;
 }
 
+.segmented--four {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.segmented__badge {
+  display: inline-block;
+  margin-left: 4px;
+  font-size: 9px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-success);
+  background: color-mix(in srgb, var(--color-success) 12%, transparent);
+  padding: 1px 4px;
+  border-radius: 3px;
+}
+
 .segmented__option {
   border: none;
   background: transparent;

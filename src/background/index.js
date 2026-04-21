@@ -90,7 +90,7 @@ async function runExtraction({ tabId, providerId, hint, mode, requestId }) {
   };
 
   try {
-    push(MESSAGE_TYPES.EXTRACT_PROGRESS, { stage: 'fetching', pct: 0.05 });
+    push(MESSAGE_TYPES.EXTRACT_PROGRESS, { stage: 'fetching', pct: 0.1 });
 
     const tab = await Platform.tabs.get(tabId).catch(() => null);
     if (tab?.url && RESTRICTED_URL_PATTERNS.some((re) => re.test(tab.url))) {
@@ -99,6 +99,15 @@ async function runExtraction({ tabId, providerId, hint, mode, requestId }) {
         'This page does not allow extensions. Try a regular website.',
         { context: { url: tab.url, reason: 'restricted_url' } },
       );
+    }
+
+    // Raw mode: no LLM, pull the structured JSON straight from the page.
+    if (mode === 'raw') {
+      push(MESSAGE_TYPES.EXTRACT_PROGRESS, { stage: 'thinking', pct: 0.5 });
+      const result = await fetchStructuredContent(tabId);
+      push(MESSAGE_TYPES.EXTRACT_PROGRESS, { stage: 'parsing', pct: 0.95 });
+      push(MESSAGE_TYPES.EXTRACT_RESULT, { ok: true, data: result });
+      return;
     }
 
     const page = await fetchPageContent(tabId);
@@ -136,8 +145,16 @@ async function runExtraction({ tabId, providerId, hint, mode, requestId }) {
 }
 
 async function fetchPageContent(tabId) {
+  return sendToTabWithInjection(tabId, { type: 'GET_PAGE_CONTENT' });
+}
+
+async function fetchStructuredContent(tabId) {
+  return sendToTabWithInjection(tabId, { type: 'GET_PAGE_STRUCTURED' });
+}
+
+async function sendToTabWithInjection(tabId, message) {
   try {
-    const response = await Platform.tabs.sendMessage(tabId, { type: 'GET_PAGE_CONTENT' });
+    const response = await Platform.tabs.sendMessage(tabId, message);
     if (response?.ok) return response.data;
     throw new JSnapError(ERROR_CODES.CONTENT_EMPTY, response?.error ?? 'Content script returned no data');
   } catch (err) {
@@ -168,7 +185,7 @@ async function fetchPageContent(tabId) {
     );
   }
 
-  const response = await Platform.tabs.sendMessage(tabId, { type: 'GET_PAGE_CONTENT' });
+  const response = await Platform.tabs.sendMessage(tabId, message);
   if (response?.ok) return response.data;
   throw new JSnapError(ERROR_CODES.CONTENT_EMPTY, response?.error ?? 'Content script returned no data after injection');
 }

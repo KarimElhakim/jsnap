@@ -6,6 +6,29 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-04-21
+
+### Added
+
+- **Raw mode** — deterministic DOM → JSON extraction, now the default. No API key required, no network call, no quota. Runs in the content script in about 100 ms. Lossless: every paragraph, list, table, code block, quote, and image is captured as a typed JSON block under its containing heading.
+- New module `src/content/structured.js` — the DOM walker that produces the Raw output tree (`EXTRACTOR_VERSION = "2.0.0"`).
+- New module `src/content/pre-splitter.js` — promotes ASCII-styled headings (underlined, roman-numeral, numbered) within a single `<pre>` block into real sections. This is what lets GameFAQs-style walkthroughs round-trip with chapter structure intact.
+- Typed block schema: `paragraph | list | table | code | quote | image`, each with a stable `type` discriminator so downstream tools can consume the JSON without cleanup.
+- `__meta.stats` on Raw output: `{ sections, blocks, characters, elapsedMs }`.
+- Mode badges in the popup segmented control — "free" tag on Raw.
+- Per-mode help text so users see the trade-off when they switch.
+
+### Changed
+
+- **Default extraction mode is now Raw.** Previously Structure (LLM-backed). Users still land on a working experience without configuring an API key.
+- Popup UI hides the provider selector when Raw mode is active.
+- `src/background/index.js` short-circuits Raw requests: calls the content script's `GET_PAGE_STRUCTURED` handler, returns the result; no provider instantiation, no usage increment.
+- `MODES` constant now includes `RAW`; `LLM_MODES` array added for call-site clarity.
+
+### Why
+
+v0.1.x treated the LLM as the primary extractor. For the main use case ("translate this page into JSON"), the LLM is the wrong tool: it introduces latency, quota pressure, prompt-tuning friction, and truncation ceilings. A deterministic DOM walker is faster, free, reproducible, and lossless. LLM modes remain available as BYOK for when semantic intelligence is genuinely needed (summaries, specific-field extraction).
+
 ## [0.1.2] - 2026-04-21
 
 ### Added
@@ -66,7 +89,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Settings page for provider selection, model selection, and API-key management.
 - MIT license, Buy Me a Coffee and GitHub Sponsors support links.
 
-[Unreleased]: https://github.com/KarimElhakim/jsnap/compare/v0.1.2...HEAD
+[Unreleased]: https://github.com/KarimElhakim/jsnap/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/KarimElhakim/jsnap/compare/v0.1.2...v0.2.0
 [0.1.2]: https://github.com/KarimElhakim/jsnap/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/KarimElhakim/jsnap/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/KarimElhakim/jsnap/releases/tag/v0.1.0

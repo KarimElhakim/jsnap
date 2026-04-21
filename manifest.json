@@ -3,7 +3,7 @@
   "name": "__MSG_app_name__",
   "short_name": "JSnap",
   "description": "__MSG_app_description__",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "minimum_chrome_version": "120",
   "default_locale": "en",
 

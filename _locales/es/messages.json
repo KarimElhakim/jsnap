@@ -10,11 +10,22 @@
   "popup_section_progress": { "message": "Sección $1 de $2" },
 
   "popup_mode_label": { "message": "Modo" },
+  "popup_mode_raw": { "message": "Bruto" },
+  "popup_mode_raw_badge": { "message": "gratis" },
   "popup_mode_structure": { "message": "Estructura" },
   "popup_mode_summary": { "message": "Resumen" },
   "popup_mode_data": { "message": "Datos" },
-  "popup_mode_help": {
-    "message": "Estructura conserva el texto completo. Resumen lo condensa. Datos extrae solo tablas y especificaciones."
+  "popup_mode_help_raw": {
+    "message": "Análisis instantáneo del DOM. No requiere clave de API."
+  },
+  "popup_mode_help_structure": {
+    "message": "El LLM conserva el texto completo sección por sección. Más lento; usa tu cuota."
+  },
+  "popup_mode_help_summary": {
+    "message": "El LLM condensa la página en puntos clave."
+  },
+  "popup_mode_help_data": {
+    "message": "El LLM extrae tablas, precios y especificaciones; descarta la prosa."
   },
 
   "popup_hint_label": { "message": "Sugerencia (opcional)" },

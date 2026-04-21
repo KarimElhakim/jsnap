@@ -9,11 +9,22 @@
   "popup_section_progress": { "message": "Section $1 of $2" },
 
   "popup_mode_label": { "message": "Mode" },
+  "popup_mode_raw": { "message": "Raw" },
+  "popup_mode_raw_badge": { "message": "free" },
   "popup_mode_structure": { "message": "Structure" },
   "popup_mode_summary": { "message": "Summary" },
   "popup_mode_data": { "message": "Data" },
-  "popup_mode_help": {
-    "message": "Structure preserves the full text. Summary condenses it. Data extracts tables and specs only."
+  "popup_mode_help_raw": {
+    "message": "Instant deterministic parse of the page's DOM. No API key required."
+  },
+  "popup_mode_help_structure": {
+    "message": "LLM preserves the full text, section by section. Slower; uses your API quota."
+  },
+  "popup_mode_help_summary": {
+    "message": "LLM condenses the page into key points."
+  },
+  "popup_mode_help_data": {
+    "message": "LLM extracts tables, prices, specs; drops prose."
   },
 
   "popup_hint_label": { "message": "Hint (optional)" },

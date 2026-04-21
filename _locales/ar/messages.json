@@ -10,11 +10,22 @@
   "popup_section_progress": { "message": "القسم $1 من $2" },
 
   "popup_mode_label": { "message": "النمط" },
+  "popup_mode_raw": { "message": "خام" },
+  "popup_mode_raw_badge": { "message": "مجاني" },
   "popup_mode_structure": { "message": "هيكلة" },
   "popup_mode_summary": { "message": "ملخص" },
   "popup_mode_data": { "message": "بيانات" },
-  "popup_mode_help": {
-    "message": "الهيكلة تحافظ على النص كاملاً. الملخص يختصره. البيانات تستخرج الجداول والمواصفات فقط."
+  "popup_mode_help_raw": {
+    "message": "تحليل فوري للصفحة دون الحاجة إلى مفتاح API."
+  },
+  "popup_mode_help_structure": {
+    "message": "يحافظ LLM على النص كاملاً قسماً بقسم. أبطأ ويستهلك حصة API."
+  },
+  "popup_mode_help_summary": {
+    "message": "يختصر LLM الصفحة إلى نقاط رئيسية."
+  },
+  "popup_mode_help_data": {
+    "message": "يستخرج LLM الجداول والأسعار والمواصفات فقط."
   },
 
   "popup_hint_label": { "message": "تلميح (اختياري)" },
