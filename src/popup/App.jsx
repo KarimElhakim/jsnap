@@ -31,14 +31,12 @@ function resolveHasApiKey() {
   const cfg = s.providers?.[pid];
   if (!cfg) return false;
   if (pid === 'ollama') return true; // Ollama is local; no key required
-  return !!(cfg.apiKey?.trim());
+  return !!cfg.apiKey?.trim();
 }
 
 async function refreshUsage(providerId) {
   if (!providerId) return;
-  const resp = await Platform.runtime.sendMessage(
-    message(MESSAGE_TYPES.GET_USAGE, { providerId }),
-  );
+  const resp = await Platform.runtime.sendMessage(message(MESSAGE_TYPES.GET_USAGE, { providerId }));
   if (resp?.ok) usage.value = resp.data ?? { count: 0 };
 }
 

@@ -39,9 +39,13 @@ export class OpenAICompatibleProvider extends Provider {
   async complete({ system, user, responseFormat, signal }) {
     const rawBase = this.config.baseUrl?.trim();
     if (!rawBase) {
-      throw new ConfigError(ERROR_CODES.CONFIG_INVALID, 'baseUrl is required for OpenAI-Compatible provider', {
-        context: { provider: 'openai-compatible' },
-      });
+      throw new ConfigError(
+        ERROR_CODES.CONFIG_INVALID,
+        'baseUrl is required for OpenAI-Compatible provider',
+        {
+          context: { provider: 'openai-compatible' },
+        },
+      );
     }
 
     let baseUrl;
@@ -68,7 +72,9 @@ export class OpenAICompatibleProvider extends Provider {
         { role: 'user', content: user },
       ],
       temperature: 0.2,
-      ...(responseFormat?.type === 'json_object' ? { response_format: { type: 'json_object' } } : {}),
+      ...(responseFormat?.type === 'json_object'
+        ? { response_format: { type: 'json_object' } }
+        : {}),
     };
 
     let response;
@@ -81,10 +87,14 @@ export class OpenAICompatibleProvider extends Provider {
       });
     } catch (err) {
       if (err?.name === 'AbortError') throw err;
-      throw new NetworkError(ERROR_CODES.PROVIDER_NETWORK, 'Could not reach OpenAI-compatible endpoint', {
-        cause: err,
-        context: { baseUrl },
-      });
+      throw new NetworkError(
+        ERROR_CODES.PROVIDER_NETWORK,
+        'Could not reach OpenAI-compatible endpoint',
+        {
+          cause: err,
+          context: { baseUrl },
+        },
+      );
     }
 
     if (!response.ok) {
@@ -92,16 +102,24 @@ export class OpenAICompatibleProvider extends Provider {
     }
 
     const payload = await response.json().catch((err) => {
-      throw new ProviderError(ERROR_CODES.PROVIDER_FAILED, 'OpenAI-compatible endpoint returned non-JSON response', {
-        cause: err,
-      });
+      throw new ProviderError(
+        ERROR_CODES.PROVIDER_FAILED,
+        'OpenAI-compatible endpoint returned non-JSON response',
+        {
+          cause: err,
+        },
+      );
     });
 
     const text = payload?.choices?.[0]?.message?.content ?? '';
     if (!text) {
-      throw new ProviderError(ERROR_CODES.PROVIDER_FAILED, 'OpenAI-compatible endpoint returned an empty response', {
-        context: { finishReason: payload?.choices?.[0]?.finish_reason ?? null },
-      });
+      throw new ProviderError(
+        ERROR_CODES.PROVIDER_FAILED,
+        'OpenAI-compatible endpoint returned an empty response',
+        {
+          context: { finishReason: payload?.choices?.[0]?.finish_reason ?? null },
+        },
+      );
     }
 
     return {
@@ -126,23 +144,39 @@ async function throwForStatus(response, baseUrl) {
   const context = { status, detail, baseUrl };
 
   if (status === 401 || status === 403) {
-    throw new AuthError(ERROR_CODES.PROVIDER_AUTH, 'OpenAI-compatible endpoint rejected the API key', { context });
+    throw new AuthError(
+      ERROR_CODES.PROVIDER_AUTH,
+      'OpenAI-compatible endpoint rejected the API key',
+      { context },
+    );
   }
   if (status === 429) {
     const retryAfterMs = parseRetryAfter(response);
-    throw new RateLimitError(ERROR_CODES.PROVIDER_RATE_LIMIT, 'OpenAI-compatible endpoint rate limit exceeded', {
-      retryAfterMs,
-      context,
-    });
+    throw new RateLimitError(
+      ERROR_CODES.PROVIDER_RATE_LIMIT,
+      'OpenAI-compatible endpoint rate limit exceeded',
+      {
+        retryAfterMs,
+        context,
+      },
+    );
   }
   if (status >= 500) {
-    throw new ProviderError(ERROR_CODES.PROVIDER_FAILED, `OpenAI-compatible endpoint server error (${status})`, {
-      context,
-    });
+    throw new ProviderError(
+      ERROR_CODES.PROVIDER_FAILED,
+      `OpenAI-compatible endpoint server error (${status})`,
+      {
+        context,
+      },
+    );
   }
-  throw new ProviderError(ERROR_CODES.PROVIDER_FAILED, `OpenAI-compatible endpoint request failed (${status})`, {
-    context,
-  });
+  throw new ProviderError(
+    ERROR_CODES.PROVIDER_FAILED,
+    `OpenAI-compatible endpoint request failed (${status})`,
+    {
+      context,
+    },
+  );
 }
 
 function parseRetryAfter(response) {
@@ -155,4 +189,8 @@ function parseRetryAfter(response) {
   return null;
 }
 
-registerProvider(OpenAICompatibleProvider.id, OpenAICompatibleProvider.meta, OpenAICompatibleProvider);
+registerProvider(
+  OpenAICompatibleProvider.id,
+  OpenAICompatibleProvider.meta,
+  OpenAICompatibleProvider,
+);

@@ -11,12 +11,7 @@
 
 import { Provider, CAPABILITIES } from './base.js';
 import { registerProvider } from './factory.js';
-import {
-  ERROR_CODES,
-  NetworkError,
-  ProviderError,
-  ConfigError,
-} from '../core/errors.js';
+import { ERROR_CODES, NetworkError, ProviderError, ConfigError } from '../core/errors.js';
 
 const DEFAULT_BASE_URL = 'http://localhost:11434';
 const DEFAULT_MODEL = 'llama3.2';

@@ -21,7 +21,10 @@ export function HintInput({ value, onChange, disabled }) {
         onInput={(e) => onChange(e.currentTarget.value)}
         aria-describedby="hint-help"
       />
-      <p id="hint-help" style={{ fontSize: '11px', color: 'var(--color-text-muted)', marginTop: '3px' }}>
+      <p
+        id="hint-help"
+        style={{ fontSize: '11px', color: 'var(--color-text-muted)', marginTop: '3px' }}
+      >
         {t('popup_hint_help')}
       </p>
     </div>

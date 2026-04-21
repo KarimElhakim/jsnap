@@ -17,7 +17,9 @@ export function registerProvider(id, meta, ctor) {
     throw new Error('registerProvider: id must be a non-empty string');
   }
   if (registry.has(id)) {
-    logger.warn(`Provider "${id}" is being re-registered; the earlier registration is overwritten.`);
+    logger.warn(
+      `Provider "${id}" is being re-registered; the earlier registration is overwritten.`,
+    );
   }
   registry.set(id, { id, meta: Object.freeze({ ...meta }), ctor });
 }

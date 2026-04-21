@@ -63,7 +63,11 @@ export function ResultView({ data }) {
             <Copy size={12} />
             {copied.value ? t('popup_result_copied') : t('popup_result_copy')}
           </button>
-          <button class="btn btn--ghost" onClick={handleDownload} title={t('popup_result_download')}>
+          <button
+            class="btn btn--ghost"
+            onClick={handleDownload}
+            title={t('popup_result_download')}
+          >
             <Download size={12} />
           </button>
         </div>

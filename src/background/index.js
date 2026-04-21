@@ -15,12 +15,7 @@ import { extract } from '../core/extractor.js';
 import { logger } from '../core/logger.js';
 import { createDispatcher, MESSAGE_TYPES, message } from './router.js';
 import { createProvider, listProviders } from '../providers/factory.js';
-import {
-  ERROR_CODES,
-  ConfigError,
-  JSnapError,
-  toJSnapError,
-} from '../core/errors.js';
+import { ERROR_CODES, ConfigError, JSnapError, toJSnapError } from '../core/errors.js';
 
 import '../providers/gemini.js';
 import '../providers/groq.js';
@@ -64,7 +59,10 @@ on(MESSAGE_TYPES.CANCEL_REQUEST, ({ requestId }) => {
 on(MESSAGE_TYPES.EXTRACT_REQUEST, async (payload) => {
   const { tabId, providerId, hint, requestId } = payload ?? {};
   if (!tabId || !providerId || !requestId) {
-    throw new ConfigError(ERROR_CODES.CONFIG_INVALID, 'tabId, providerId, and requestId are required');
+    throw new ConfigError(
+      ERROR_CODES.CONFIG_INVALID,
+      'tabId, providerId, and requestId are required',
+    );
   }
   runExtraction({ tabId, providerId, hint, requestId }).catch((err) => {
     logger.error('Extraction rejected unexpectedly', err);
@@ -87,7 +85,10 @@ async function runExtraction({ tabId, providerId, hint, requestId }) {
 
     const pageResponse = await Platform.tabs.sendMessage(tabId, { type: 'GET_PAGE_CONTENT' });
     if (!pageResponse?.ok) {
-      throw new JSnapError(ERROR_CODES.CONTENT_EMPTY, pageResponse?.error ?? 'Content script returned no data');
+      throw new JSnapError(
+        ERROR_CODES.CONTENT_EMPTY,
+        pageResponse?.error ?? 'Content script returned no data',
+      );
     }
     const page = pageResponse.data;
 

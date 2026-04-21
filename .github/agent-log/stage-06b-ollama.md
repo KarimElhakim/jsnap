@@ -5,9 +5,9 @@
 
 ## Files created
 
-| File | Lines |
-|---|---|
-| `src/providers/ollama.js` | 159 |
+| File                      | Lines |
+| ------------------------- | ----- |
+| `src/providers/ollama.js` | 159   |
 
 ## Implementation notes
 
@@ -28,16 +28,16 @@
 
 ## Acceptance criteria
 
-| Criterion | Status |
-|---|---|
-| Same interface contract as Gemini | Pass |
-| Typed error mapping (ConfigError, NetworkError, ProviderError) | Pass |
-| Registered via `registerProvider` | Pass |
-| JSDoc header linking to API reference | Pass |
-| Under 200 lines | Pass (159) |
-| No external SDK | Pass |
-| No cross-layer imports | Pass |
-| `requiresApiKey: false` | Pass |
+| Criterion                                                      | Status     |
+| -------------------------------------------------------------- | ---------- |
+| Same interface contract as Gemini                              | Pass       |
+| Typed error mapping (ConfigError, NetworkError, ProviderError) | Pass       |
+| Registered via `registerProvider`                              | Pass       |
+| JSDoc header linking to API reference                          | Pass       |
+| Under 200 lines                                                | Pass (159) |
+| No external SDK                                                | Pass       |
+| No cross-layer imports                                         | Pass       |
+| `requiresApiKey: false`                                        | Pass       |
 
 ## Deviations
 

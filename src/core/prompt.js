@@ -45,7 +45,11 @@ function formatUserMessage({ pageTitle, pageUrl, pageText, userHint }) {
   const lines = [];
   if (pageTitle) lines.push(`PAGE TITLE: ${pageTitle}`);
   if (pageUrl) lines.push(`PAGE URL: ${pageUrl}`);
-  lines.push(userHint ? `USER HINT: ${userHint}` : 'USER HINT: (none — infer the best structure automatically)');
+  lines.push(
+    userHint
+      ? `USER HINT: ${userHint}`
+      : 'USER HINT: (none — infer the best structure automatically)',
+  );
   lines.push('');
   lines.push('PAGE CONTENT:');
   lines.push('---');

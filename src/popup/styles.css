@@ -139,7 +139,9 @@ textarea {
   font-family: var(--font);
   font-size: 13px;
   font-weight: 600;
-  transition: background 0.15s, opacity 0.15s;
+  transition:
+    background 0.15s,
+    opacity 0.15s;
 }
 
 .btn--primary {

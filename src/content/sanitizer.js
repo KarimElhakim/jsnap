@@ -14,7 +14,14 @@ const STRIP_ROLES = ['navigation', 'banner', 'contentinfo', 'complementary'];
 const NOISE_PATTERN =
   /\b(ad[-_]|ads[-_]|cookie|consent|gdpr|share[-_]|social[-_]|related[-_]|promoted|sponsor|newsletter|popup|modal|overlay)\b/i;
 
-const HEADING_PREFIX = { h1: '# ', h2: '## ', h3: '### ', h4: '#### ', h5: '##### ', h6: '###### ' };
+const HEADING_PREFIX = {
+  h1: '# ',
+  h2: '## ',
+  h3: '### ',
+  h4: '#### ',
+  h5: '##### ',
+  h6: '###### ',
+};
 
 function hasHiddenStyle(el) {
   const style = el.getAttribute('style');

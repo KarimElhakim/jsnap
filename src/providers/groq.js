@@ -72,7 +72,7 @@ export class GroqProvider extends Provider {
       response = await fetch(API_URL, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${apiKey}`,
+          Authorization: `Bearer ${apiKey}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(body),
@@ -88,7 +88,9 @@ export class GroqProvider extends Provider {
     }
 
     const payload = await response.json().catch((err) => {
-      throw new ProviderError(ERROR_CODES.PROVIDER_FAILED, 'Groq returned non-JSON response', { cause: err });
+      throw new ProviderError(ERROR_CODES.PROVIDER_FAILED, 'Groq returned non-JSON response', {
+        cause: err,
+      });
     });
 
     const text = payload?.choices?.[0]?.message?.content ?? '';
@@ -130,9 +132,13 @@ async function throwForStatus(response) {
     });
   }
   if (status >= 500) {
-    throw new ProviderError(ERROR_CODES.PROVIDER_FAILED, `Groq server error (${status})`, { context });
+    throw new ProviderError(ERROR_CODES.PROVIDER_FAILED, `Groq server error (${status})`, {
+      context,
+    });
   }
-  throw new ProviderError(ERROR_CODES.PROVIDER_FAILED, `Groq request failed (${status})`, { context });
+  throw new ProviderError(ERROR_CODES.PROVIDER_FAILED, `Groq request failed (${status})`, {
+    context,
+  });
 }
 
 function parseRetryAfter(response) {

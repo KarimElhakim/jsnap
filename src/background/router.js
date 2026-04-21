@@ -55,7 +55,10 @@ export function createDispatcher() {
 
   function listener(msg, sender, sendResponse) {
     if (!isMessage(msg)) {
-      sendResponse({ ok: false, error: { code: ERROR_CODES.INTERNAL, message: 'Malformed message' } });
+      sendResponse({
+        ok: false,
+        error: { code: ERROR_CODES.INTERNAL, message: 'Malformed message' },
+      });
       return false;
     }
     if (msg.v !== MESSAGE_VERSION) {

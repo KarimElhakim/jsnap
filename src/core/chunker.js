@@ -34,7 +34,7 @@ export function chunk(pageText, { maxTokens, budget = 0.8 }) {
       current = section;
       continue;
     }
-    if ((current.length + section.length + 2) <= softLimitChars) {
+    if (current.length + section.length + 2 <= softLimitChars) {
       current += `\n\n${section}`;
     } else {
       chunks.push(current);
@@ -43,7 +43,9 @@ export function chunk(pageText, { maxTokens, budget = 0.8 }) {
   }
   if (current) chunks.push(current);
 
-  return chunks.flatMap((c) => (c.length > softLimitChars ? splitByParagraphs(c, softLimitChars) : [c]));
+  return chunks.flatMap((c) =>
+    c.length > softLimitChars ? splitByParagraphs(c, softLimitChars) : [c],
+  );
 }
 
 function splitByHeadings(text) {
@@ -71,7 +73,7 @@ function splitByParagraphs(text, maxChars) {
       current = p;
       continue;
     }
-    if ((current.length + p.length + 2) <= maxChars) {
+    if (current.length + p.length + 2 <= maxChars) {
       current += `\n\n${p}`;
     } else {
       chunks.push(current);

@@ -8,39 +8,39 @@
 
 ## Files Created
 
-| File | Lines | Notes |
-|---|---|---|
-| `manifest.json` | 42 | MV3, `__MSG_*__` strings, content_scripts entry |
-| `vite.config.js` | 14 | Vite 6, @crxjs/vite-plugin, @preact/preset-vite |
-| `_locales/en/messages.json` | 65 | English source of truth |
-| `_locales/ar/messages.json` | 65 | Arabic (RTL) |
-| `_locales/es/messages.json` | 65 | Spanish |
-| `_locales/fr/messages.json` | 65 | French |
-| `_locales/de/messages.json` | 65 | German |
-| `scripts/generate-placeholder-icons.mjs` | 93 | Pure Node.js PNG encoder, no new deps |
-| `public/icons/icon-16.png` | — | Generated (97 B) |
-| `public/icons/icon-32.png` | — | Generated (121 B) |
-| `public/icons/icon-48.png` | — | Generated (138 B) |
-| `public/icons/icon-128.png` | — | Generated (369 B) |
-| `src/core/platform.js` | +5 | Added `runtime.openOptionsPage()` |
-| `src/content/sanitizer.js` | 104 | Strips boilerplate, emits markdown-ish text |
-| `src/content/index.js` | 21 | Message-based content script |
-| `src/popup/index.html` | 12 | Preact host |
-| `src/popup/main.jsx` | 12 | RTL detection, theme bootstrap |
-| `src/popup/styles.css` | 171 | CSS variables, light/dark, WCAG AA |
-| `src/popup/hooks/useI18n.js` | 10 | Returns `t()` bound to Platform.i18n.t |
-| `src/popup/components/ProviderSelect.jsx` | 30 | Populated via LIST_PROVIDERS message |
-| `src/popup/components/HintInput.jsx` | 30 | Auto-growing textarea |
-| `src/popup/components/ExtractButton.jsx` | 42 | Spinner + cancel during extraction |
-| `src/popup/components/ResultView.jsx` | 84 | Per-token JSON highlighting, Copy, Download |
-| `src/popup/components/UsageMeter.jsx` | 47 | Daily counter + progress bar |
-| `src/popup/components/StatusBar.jsx` | 77 | error.code → i18n key, progress stages |
-| `src/popup/components/DonateFooter.jsx` | 40 | BuyMeACoffee + GitHub Sponsors |
-| `src/popup/App.jsx` | 146 | Signal-driven orchestration |
-| `src/options/index.html` | 12 | Full-page settings host |
-| `src/options/main.jsx` | 11 | RTL detection, theme bootstrap |
-| `src/options/styles.css` | 168 | Full-page layout, provider cards |
-| `src/options/App.jsx` | 190 | Provider configs, theme, save/clear |
+| File                                      | Lines | Notes                                           |
+| ----------------------------------------- | ----- | ----------------------------------------------- |
+| `manifest.json`                           | 42    | MV3, `__MSG_*__` strings, content_scripts entry |
+| `vite.config.js`                          | 14    | Vite 6, @crxjs/vite-plugin, @preact/preset-vite |
+| `_locales/en/messages.json`               | 65    | English source of truth                         |
+| `_locales/ar/messages.json`               | 65    | Arabic (RTL)                                    |
+| `_locales/es/messages.json`               | 65    | Spanish                                         |
+| `_locales/fr/messages.json`               | 65    | French                                          |
+| `_locales/de/messages.json`               | 65    | German                                          |
+| `scripts/generate-placeholder-icons.mjs`  | 93    | Pure Node.js PNG encoder, no new deps           |
+| `public/icons/icon-16.png`                | —     | Generated (97 B)                                |
+| `public/icons/icon-32.png`                | —     | Generated (121 B)                               |
+| `public/icons/icon-48.png`                | —     | Generated (138 B)                               |
+| `public/icons/icon-128.png`               | —     | Generated (369 B)                               |
+| `src/core/platform.js`                    | +5    | Added `runtime.openOptionsPage()`               |
+| `src/content/sanitizer.js`                | 104   | Strips boilerplate, emits markdown-ish text     |
+| `src/content/index.js`                    | 21    | Message-based content script                    |
+| `src/popup/index.html`                    | 12    | Preact host                                     |
+| `src/popup/main.jsx`                      | 12    | RTL detection, theme bootstrap                  |
+| `src/popup/styles.css`                    | 171   | CSS variables, light/dark, WCAG AA              |
+| `src/popup/hooks/useI18n.js`              | 10    | Returns `t()` bound to Platform.i18n.t          |
+| `src/popup/components/ProviderSelect.jsx` | 30    | Populated via LIST_PROVIDERS message            |
+| `src/popup/components/HintInput.jsx`      | 30    | Auto-growing textarea                           |
+| `src/popup/components/ExtractButton.jsx`  | 42    | Spinner + cancel during extraction              |
+| `src/popup/components/ResultView.jsx`     | 84    | Per-token JSON highlighting, Copy, Download     |
+| `src/popup/components/UsageMeter.jsx`     | 47    | Daily counter + progress bar                    |
+| `src/popup/components/StatusBar.jsx`      | 77    | error.code → i18n key, progress stages          |
+| `src/popup/components/DonateFooter.jsx`   | 40    | BuyMeACoffee + GitHub Sponsors                  |
+| `src/popup/App.jsx`                       | 146   | Signal-driven orchestration                     |
+| `src/options/index.html`                  | 12    | Full-page settings host                         |
+| `src/options/main.jsx`                    | 11    | RTL detection, theme bootstrap                  |
+| `src/options/styles.css`                  | 168   | Full-page layout, provider cards                |
+| `src/options/App.jsx`                     | 190   | Provider configs, theme, save/clear             |
 
 ---
 

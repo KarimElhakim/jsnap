@@ -16,7 +16,9 @@ export function UsageMeter({ usage }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px' }}>
-        <span style={{ color: 'var(--color-text-muted)' }}>{t('popup_usage_today', [String(count)])}</span>
+        <span style={{ color: 'var(--color-text-muted)' }}>
+          {t('popup_usage_today', [String(count)])}
+        </span>
         {nearing && (
           <span style={{ color: 'var(--color-danger)', fontWeight: 600 }}>
             {t('popup_usage_limit_nearing')}

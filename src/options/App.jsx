@@ -18,9 +18,7 @@ const PROVIDER_DEFS = [
 const cfg = signal(null);
 const saved = signal(false);
 const clearPending = signal(false);
-const securityDismissed = signal(
-  globalThis.localStorage?.getItem('jsnap_sec_notice') === '1',
-);
+const securityDismissed = signal(globalThis.localStorage?.getItem('jsnap_sec_notice') === '1');
 
 function updateCfg(patch) {
   cfg.value = { ...cfg.value, ...patch };

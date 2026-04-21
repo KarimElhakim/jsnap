@@ -6,9 +6,11 @@ labels: bug
 ---
 
 ## Summary
+
 <!-- One sentence describing the problem. -->
 
 ## Steps to reproduce
+
 1.
 2.
 3.
@@ -18,6 +20,7 @@ labels: bug
 ## Actual behavior
 
 ## Environment
+
 - JSnap version:
 - Chrome version:
 - OS:
@@ -25,8 +28,11 @@ labels: bug
 - Model:
 
 ## Console output
+
 <!-- Paste any errors from chrome://extensions -> JSnap -> Inspect views: service worker. Redact API keys. -->
+
 ```
+
 ```
 
 ## Additional context

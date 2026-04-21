@@ -141,22 +141,24 @@ jsnap/
 export class JSnapError extends Error {
   constructor(code, message, { cause, context } = {}) {
     super(message);
-    this.code = code;         // stable, machine-readable
-    this.cause = cause;       // underlying Error, if any
-    this.context = context;   // arbitrary metadata (provider, stage, etc.)
+    this.code = code; // stable, machine-readable
+    this.cause = cause; // underlying Error, if any
+    this.context = context; // arbitrary metadata (provider, stage, etc.)
     this.name = this.constructor.name;
   }
-  toJSON() { /* code, message, context only — NEVER cause with secrets */ }
+  toJSON() {
+    /* code, message, context only — NEVER cause with secrets */
+  }
 }
 
-export class ConfigError          extends JSnapError {}  // missing/invalid API key
-export class ProviderError        extends JSnapError {}  // provider-side failure
-export class RateLimitError       extends ProviderError {} // with retryAfterMs
-export class AuthError            extends ProviderError {}
-export class NetworkError         extends ProviderError {}
-export class SchemaError          extends JSnapError {}  // validator failure
-export class ContentTooLargeError extends JSnapError {}  // exceeded capacity
-export class CancelledError       extends JSnapError {}  // user aborted
+export class ConfigError extends JSnapError {} // missing/invalid API key
+export class ProviderError extends JSnapError {} // provider-side failure
+export class RateLimitError extends ProviderError {} // with retryAfterMs
+export class AuthError extends ProviderError {}
+export class NetworkError extends ProviderError {}
+export class SchemaError extends JSnapError {} // validator failure
+export class ContentTooLargeError extends JSnapError {} // exceeded capacity
+export class CancelledError extends JSnapError {} // user aborted
 export class UnknownProviderError extends JSnapError {}
 ```
 
@@ -204,7 +206,9 @@ export class Provider {
   static id = '';
   static meta = { displayName: '', requiresApiKey: true, capabilities: {} };
 
-  constructor(config) { this.config = config; }
+  constructor(config) {
+    this.config = config;
+  }
 
   // Returns Promise<{ text: string, raw: unknown, usage?: { inputTokens, outputTokens } }>
   async complete({ system, user, responseFormat, signal }) {
@@ -212,9 +216,15 @@ export class Provider {
   }
 
   // Optional capabilities:
-  get supportsJsonMode() { return false; }
-  get supportsStreaming() { return false; }
-  get maxInputTokens()    { return 8_000; }
+  get supportsJsonMode() {
+    return false;
+  }
+  get supportsStreaming() {
+    return false;
+  }
+  get maxInputTokens() {
+    return 8_000;
+  }
 }
 
 export const CAPABILITIES = Object.freeze({ JSON_MODE: 'jsonMode', STREAMING: 'streaming' });
@@ -225,8 +235,12 @@ export const CAPABILITIES = Object.freeze({ JSON_MODE: 'jsonMode', STREAMING: 's
 ```js
 const registry = new Map();
 
-export function registerProvider(id, meta, ctor) { registry.set(id, { id, meta, ctor }); }
-export function listProviders() { return [...registry.values()].map(({id, meta}) => ({id, meta})); }
+export function registerProvider(id, meta, ctor) {
+  registry.set(id, { id, meta, ctor });
+}
+export function listProviders() {
+  return [...registry.values()].map(({ id, meta }) => ({ id, meta }));
+}
 export function createProvider(id, config) {
   const entry = registry.get(id);
   if (!entry) throw new UnknownProviderError('provider.unknown', `Unknown provider: ${id}`);
@@ -273,7 +287,16 @@ export function chunk(pageText, { maxTokens }) { ... }  // -> string[]
 Pure orchestration layer. Provider-agnostic. Receives a `Provider` instance via dependency injection.
 
 ```js
-export async function extract({ provider, pageText, pageUrl, pageTitle, userHint, locale, signal, onProgress }) {
+export async function extract({
+  provider,
+  pageText,
+  pageUrl,
+  pageTitle,
+  userHint,
+  locale,
+  signal,
+  onProgress,
+}) {
   // 1. buildExtractionPrompt(...)
   // 2. if pageText fits in provider.maxInputTokens: one-shot call
   //    else: chunk + per-chunk extract + deterministic merge
@@ -438,6 +461,7 @@ Every stage ends with a git commit. Every file has acceptance criteria below.
 ### Stage 6 — Other providers (Sonnet 4.5, 3 parallel sub-agents)
 
 **Files (parallel):**
+
 - 6a: `providers/groq.js`
 - 6b: `providers/ollama.js`
 - 6c: `providers/openai-compatible.js`
@@ -452,6 +476,7 @@ Every stage ends with a git commit. Every file has acceptance criteria below.
 ### Stage 7 — Polish (Sonnet 4.5, 2 parallel sub-agents)
 
 **Files (parallel):**
+
 - 7a: `README.md` (badges, screenshots, install, usage, i18n list, donate links)
 - 7b: `scripts/package.mjs`, final `manifest.json` review, Chrome Web Store readiness checklist
 

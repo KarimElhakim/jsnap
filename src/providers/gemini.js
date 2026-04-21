@@ -79,7 +79,9 @@ export class GeminiProvider extends Provider {
       });
     } catch (err) {
       if (err?.name === 'AbortError') throw err;
-      throw new NetworkError(ERROR_CODES.PROVIDER_NETWORK, 'Could not reach Gemini', { cause: err });
+      throw new NetworkError(ERROR_CODES.PROVIDER_NETWORK, 'Could not reach Gemini', {
+        cause: err,
+      });
     }
 
     if (!response.ok) {
@@ -87,7 +89,9 @@ export class GeminiProvider extends Provider {
     }
 
     const payload = await response.json().catch((err) => {
-      throw new ProviderError(ERROR_CODES.PROVIDER_FAILED, 'Gemini returned non-JSON response', { cause: err });
+      throw new ProviderError(ERROR_CODES.PROVIDER_FAILED, 'Gemini returned non-JSON response', {
+        cause: err,
+      });
     });
 
     const text = payload?.candidates?.[0]?.content?.parts?.map((p) => p.text ?? '').join('') ?? '';
@@ -129,9 +133,13 @@ async function throwForStatus(response) {
     });
   }
   if (status >= 500) {
-    throw new ProviderError(ERROR_CODES.PROVIDER_FAILED, `Gemini server error (${status})`, { context });
+    throw new ProviderError(ERROR_CODES.PROVIDER_FAILED, `Gemini server error (${status})`, {
+      context,
+    });
   }
-  throw new ProviderError(ERROR_CODES.PROVIDER_FAILED, `Gemini request failed (${status})`, { context });
+  throw new ProviderError(ERROR_CODES.PROVIDER_FAILED, `Gemini request failed (${status})`, {
+    context,
+  });
 }
 
 function parseRetryAfter(response) {

@@ -2,9 +2,9 @@
 
 ## Files created
 
-| File | Lines |
-|---|---|
-| `src/providers/groq.js` | 148 |
+| File                    | Lines |
+| ----------------------- | ----- |
+| `src/providers/groq.js` | 148   |
 
 ## Acceptance checklist
 

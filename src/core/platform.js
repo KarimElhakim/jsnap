@@ -10,7 +10,9 @@ const chromeApi = globalThis.chrome;
 
 function assertChrome() {
   if (!chromeApi) {
-    throw new Error('Platform: chrome.* is unavailable (running outside a browser extension context).');
+    throw new Error(
+      'Platform: chrome.* is unavailable (running outside a browser extension context).',
+    );
   }
 }
 

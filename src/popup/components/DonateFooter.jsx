@@ -26,7 +26,12 @@ export function DonateFooter() {
         target="_blank"
         rel="noopener noreferrer"
         title="Buy Me a Coffee"
-        style={{ color: 'var(--color-text-muted)', display: 'flex', alignItems: 'center', gap: '3px' }}
+        style={{
+          color: 'var(--color-text-muted)',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '3px',
+        }}
       >
         <Coffee size={13} />
       </a>
@@ -35,7 +40,12 @@ export function DonateFooter() {
         target="_blank"
         rel="noopener noreferrer"
         title="GitHub Sponsors"
-        style={{ color: 'var(--color-text-muted)', display: 'flex', alignItems: 'center', gap: '3px' }}
+        style={{
+          color: 'var(--color-text-muted)',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '3px',
+        }}
       >
         <Heart size={13} />
       </a>

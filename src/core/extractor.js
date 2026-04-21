@@ -29,7 +29,10 @@ export async function extract(args) {
 
   if (signal?.aborted) throw new CancelledError(ERROR_CODES.CANCELLED, 'Cancelled before start');
   if (!pageText || pageText.trim().length < MIN_USEFUL_CONTENT_CHARS) {
-    throw new ContentTooLargeError(ERROR_CODES.CONTENT_EMPTY, 'Page had no meaningful text after sanitization');
+    throw new ContentTooLargeError(
+      ERROR_CODES.CONTENT_EMPTY,
+      'Page had no meaningful text after sanitization',
+    );
   }
 
   const providerMax = provider.maxInputTokens ?? 8_000;
@@ -39,15 +42,25 @@ export async function extract(args) {
 
   const results = [];
   for (let i = 0; i < chunks.length; i += 1) {
-    if (signal?.aborted) throw new CancelledError(ERROR_CODES.CANCELLED, 'Cancelled during extraction');
+    if (signal?.aborted)
+      throw new CancelledError(ERROR_CODES.CANCELLED, 'Cancelled during extraction');
 
     const isMulti = chunks.length > 1;
     const chunkText = isMulti ? `(Chunk ${i + 1} of ${chunks.length})\n\n${chunks[i]}` : chunks[i];
 
     if (estimateTokens(chunkText) > providerMax) {
-      throw new ContentTooLargeError(ERROR_CODES.CONTENT_TOO_LARGE, 'Page exceeds the provider context window even after chunking', {
-        context: { chunkIndex: i, providerId: provider.constructor.id, estimated: estimateTokens(chunkText), max: providerMax },
-      });
+      throw new ContentTooLargeError(
+        ERROR_CODES.CONTENT_TOO_LARGE,
+        'Page exceeds the provider context window even after chunking',
+        {
+          context: {
+            chunkIndex: i,
+            providerId: provider.constructor.id,
+            estimated: estimateTokens(chunkText),
+            max: providerMax,
+          },
+        },
+      );
     }
 
     const prompt = buildExtractionPrompt({
