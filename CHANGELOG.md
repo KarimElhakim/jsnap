@@ -6,6 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.4.3] - 2026-04-21
+
+### Fixed
+
+- **Filenames really work now.** The v0.4.2 fix was correct in shape but broken in one specific way: the offscreen document's script was inline, and MV3's default CSP (`script-src 'self'`) forbids inline scripts in extension pages. The script never ran, the offscreen document never responded, and every download silently fell back to the data-URL path that produced `download.json`. The offscreen script now lives in its own file (`public/offscreen.js`) and loads via `<script src>`.
+- **Belt-and-braces filename handling**: downloads are now built from a `File` object (not a bare `Blob`) so the filename is bound to the object itself. Chrome's Save As dialog reads `File.name` and uses it as the default, which sidesteps the other known Chrome quirk where blob-URL downloads default to the URL's last path segment.
+- **Offscreen failures are now loud**: if the offscreen document cannot be created or doesn't respond within 4 seconds, the download throws a descriptive error and a desktop notification fires with the real reason. No more silent fall-through to `download.json`.
+
+### Removed
+
+- Silent data-URL fallback in `downloadResult`. It was producing the wrong behaviour and hiding the real problem. If blob URLs cannot be created, the download fails with a visible error instead.
+
 ## [0.4.2] - 2026-04-21
 
 ### Fixed
@@ -183,7 +195,8 @@ v0.1.x treated the LLM as the primary extractor. For the main use case ("transla
 - Settings page for provider selection, model selection, and API-key management.
 - MIT license, Buy Me a Coffee and GitHub Sponsors support links.
 
-[Unreleased]: https://github.com/KarimElhakim/jsnap/compare/v0.4.2...HEAD
+[Unreleased]: https://github.com/KarimElhakim/jsnap/compare/v0.4.3...HEAD
+[0.4.3]: https://github.com/KarimElhakim/jsnap/compare/v0.4.2...v0.4.3
 [0.4.2]: https://github.com/KarimElhakim/jsnap/compare/v0.4.1...v0.4.2
 [0.4.1]: https://github.com/KarimElhakim/jsnap/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/KarimElhakim/jsnap/compare/v0.3.0...v0.4.0

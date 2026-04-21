@@ -1,17 +1,21 @@
 /**
  * Download helpers shared by popup, options, and background.
  *
- * Critical: MV3 service workers do not expose `URL.createObjectURL`. The
- * obvious fallback (a base64 data URL) is unreliable because Chrome often
- * refuses to honour the `filename` option of `chrome.downloads.download`
- * when the source is a data URL — downloads land as `download.json` with
- * no regard for the name we asked for.
+ * Three things had to line up for Chrome to honour our filename:
  *
- * The reliable path is a Blob URL. In the popup we get it directly; in the
- * service worker we bounce through an offscreen document (per the official
- * Chrome MV3 pattern) which exposes `URL.createObjectURL`.
+ *  1. We need a `blob:` URL, not a `data:` URL. Chrome ignores the
+ *     `filename` option of `chrome.downloads.download` when the source is
+ *     a data URL.
+ *  2. The blob has to be wrapped in a `File` whose `name` property matches
+ *     the filename we want. With a plain `Blob`, Chrome sometimes uses the
+ *     URL's UUID as the Save As default and ignores our filename.
+ *  3. In the service worker we cannot call `URL.createObjectURL` directly,
+ *     so we bounce through an offscreen document. That document's script
+ *     has to be external — inline scripts are blocked by MV3's default
+ *     CSP.
  *
- * Filenames always derive from the page title. Never from opaque IDs.
+ * All three are now addressed. If offscreen fails, we surface the error
+ * instead of silently writing a `download.json`.
  */
 
 import { Platform } from './platform.js';
@@ -42,38 +46,23 @@ export function suggestedFilename(data, ext, { prefix = '', suffix = '' } = {}) 
   return `${p}${slug}${suf}-${date}.${ext}`;
 }
 
-function utf8ToBase64(str) {
-  const bytes = new TextEncoder().encode(str);
-  const chunk = 0x8000;
-  let binary = '';
-  for (let i = 0; i < bytes.length; i += chunk) {
-    binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunk));
-  }
-  return btoa(binary);
+function baseName(path) {
+  const idx = path.lastIndexOf('/');
+  return idx >= 0 ? path.slice(idx + 1) : path;
 }
 
 function isDocumentContext() {
   return typeof URL !== 'undefined' && typeof URL.createObjectURL === 'function';
 }
 
-async function blobUrlFromOffscreen(body, mime) {
-  try {
-    await ensureOffscreenDocument();
-  } catch {
-    return null;
-  }
-  return new Promise((resolve) => {
-    chrome.runtime.sendMessage(
-      { target: 'offscreen', type: 'CREATE_BLOB_URL', body, mime },
-      (resp) => resolve(resp?.ok ? resp.url : null),
-    );
-  });
-}
-
 let offscreenPromise = null;
 
 async function ensureOffscreenDocument() {
-  if (!chrome?.offscreen) throw new Error('offscreen API unavailable');
+  if (!globalThis.chrome?.offscreen) {
+    throw new Error(
+      'offscreen API unavailable — reinstall the extension to grant the new permission',
+    );
+  }
   if (offscreenPromise) return offscreenPromise;
   offscreenPromise = (async () => {
     const path = 'offscreen.html';
@@ -86,7 +75,7 @@ async function ensureOffscreenDocument() {
         });
         if (contexts.length > 0) return;
       } catch {
-        /* proceed to create */
+        /* fall through */
       }
     }
     try {
@@ -106,21 +95,37 @@ async function ensureOffscreenDocument() {
   return offscreenPromise;
 }
 
-async function makeDownloadUrl(body, mime) {
-  if (isDocumentContext()) {
-    try {
-      const blob = new Blob([body], { type: mime });
-      return { url: URL.createObjectURL(blob), revokable: 'local' };
-    } catch {
-      /* fall through */
-    }
-  }
-  const url = await blobUrlFromOffscreen(body, mime);
-  if (url) return { url, revokable: 'offscreen' };
-  return { url: `data:${mime};base64,${utf8ToBase64(body)}`, revokable: 'none' };
+async function blobUrlFromOffscreen(body, mime, filename) {
+  await ensureOffscreenDocument();
+  return new Promise((resolve, reject) => {
+    const timeout = setTimeout(
+      () => reject(new Error('offscreen timed out (check service worker console)')),
+      4000,
+    );
+    chrome.runtime.sendMessage(
+      { target: 'offscreen', type: 'CREATE_BLOB_URL', body, mime, filename },
+      (resp) => {
+        clearTimeout(timeout);
+        const runtimeErr = chrome.runtime?.lastError?.message;
+        if (runtimeErr) reject(new Error(`offscreen sendMessage: ${runtimeErr}`));
+        else if (resp?.ok) resolve(resp.url);
+        else reject(new Error(resp?.error ?? 'offscreen returned no URL'));
+      },
+    );
+  });
 }
 
-async function revokeDownloadUrl(url, kind) {
+async function makeDownloadUrl(body, mime, filename) {
+  const name = baseName(filename);
+  if (isDocumentContext()) {
+    const file = new File([body], name, { type: mime });
+    return { url: URL.createObjectURL(file), revokable: 'local' };
+  }
+  const url = await blobUrlFromOffscreen(body, mime, name);
+  return { url, revokable: 'offscreen' };
+}
+
+function revokeDownloadUrl(url, kind) {
   if (kind === 'local') {
     setTimeout(() => URL.revokeObjectURL(url), 60_000);
   } else if (kind === 'offscreen') {
@@ -137,8 +142,9 @@ async function revokeDownloadUrl(url, kind) {
 /**
  * Download a JSnap result as JSON or Markdown.
  *
- * `saveAs: true` opens the Save As dialog (single user-initiated saves).
- * `saveAs: false` saves silently into Downloads (batch operations).
+ * Throws a descriptive error if the URL creation step fails — we never fall
+ * back to a data URL silently, because that path produced `download.json`
+ * in the wild.
  */
 export async function downloadResult(
   data,
@@ -148,8 +154,8 @@ export async function downloadResult(
   const body = isJson ? JSON.stringify(data, null, 2) : jsonToMarkdown(data);
   const mime = isJson ? 'application/json' : 'text/markdown';
   const ext = isJson ? 'json' : 'md';
-  const { url, revokable } = await makeDownloadUrl(body, mime);
   const filename = suggestedFilename(data, ext, { prefix, suffix });
+  const { url, revokable } = await makeDownloadUrl(body, mime, filename);
 
   try {
     const downloadId = await Platform.downloads.download({ url, filename, saveAs });
