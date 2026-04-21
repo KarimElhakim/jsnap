@@ -6,6 +6,26 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.4.2] - 2026-04-21
+
+### Fixed
+
+- **Downloads now use the real page-title filename.** Previously saves from `Alt+J`, the context menu, and "Snap all tabs" landed as `download.json` because Chrome silently ignores the `filename` option of `chrome.downloads.download` when the URL is a `data:` URL. The service worker now bounces through an **offscreen document** (the official MV3 pattern for Blob access from service workers) so every download uses a real `blob:` URL, and Chrome honours the filename we compute. Same fix applies to popup-initiated Markdown saves (`<slug>-<date>.md` instead of a UUID-looking name).
+- **"Snap all tabs" saves every tab, not just the active one.** The combination of offscreen-backed downloads (above) plus the v0.4.1 `host_permissions` change means `scripting.executeScript` can reach every tab, extract each one, and each file lands with the right name in the batch folder. The batch summary now reports `failedCount` alongside `savedCount`, and the notification tells you if any tabs failed.
+- **"Save selected text as JSON" produces a small, exact file** — `{ pageTitle, pageUrl, selectedText, __meta: { mode: 'selection' } }`. No full-page extraction. Filename: `<page-slug>-selection-<date>.json`.
+
+### Changed
+
+- **Color scheme overhauled.** The purple palette is gone. The extension now uses a Chrome-native blue (`#2563eb`) on a slate neutral palette in light mode, and a deep slate dark-mode palette with a brighter blue accent (`#3b82f6`). Cleaner, more professional, reads well at the small popup size.
+- **Icons regenerated** from the placeholder generator with the new blue background. The glyph is unchanged; only the colour shifted. Replace with your own artwork before Chrome Web Store submission.
+- **Offscreen document added** at `offscreen.html` with an inline message handler that creates and revokes Blob URLs on demand. Lifecycle-managed by `ensureOffscreenDocument()` in `src/core/download.js`.
+- New `offscreen` permission in the manifest.
+- `downloadResult` now returns `{ downloadId, filename }` so callers can log or display what was actually saved.
+
+### Notes
+
+- **This release changes the manifest's permission surface** (adds `offscreen`). If you side-loaded a previous version, fully **remove** it at `chrome://extensions` and load v0.4.2 fresh so Chrome re-prompts with the correct scope.
+
 ## [0.4.1] - 2026-04-21
 
 ### Fixed
@@ -163,7 +183,8 @@ v0.1.x treated the LLM as the primary extractor. For the main use case ("transla
 - Settings page for provider selection, model selection, and API-key management.
 - MIT license, Buy Me a Coffee and GitHub Sponsors support links.
 
-[Unreleased]: https://github.com/KarimElhakim/jsnap/compare/v0.4.1...HEAD
+[Unreleased]: https://github.com/KarimElhakim/jsnap/compare/v0.4.2...HEAD
+[0.4.2]: https://github.com/KarimElhakim/jsnap/compare/v0.4.1...v0.4.2
 [0.4.1]: https://github.com/KarimElhakim/jsnap/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/KarimElhakim/jsnap/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/KarimElhakim/jsnap/compare/v0.2.0...v0.3.0

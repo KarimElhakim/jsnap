@@ -1,12 +1,12 @@
 /* ── Design tokens ─────────────────────────────────────────────────────────── */
 :root {
   --color-bg: #ffffff;
-  --color-surface: #f5f3ff;
-  --color-border: #e0daf7;
-  --color-text: #1a0a36;
-  --color-text-muted: #6b6b80;
-  --color-primary: #5b21b6;
-  --color-primary-hover: #4c1d95;
+  --color-surface: #f8fafc;
+  --color-border: #e2e8f0;
+  --color-text: #0f172a;
+  --color-text-muted: #64748b;
+  --color-primary: #2563eb;
+  --color-primary-hover: #1d4ed8;
   --color-primary-fg: #ffffff;
   --color-danger: #dc2626;
   --color-danger-hover: #b91c1c;
@@ -14,46 +14,52 @@
   --color-warn-border: #fcd34d;
   --color-warn-text: #92400e;
   --color-success: #16a34a;
-  --color-json-key: #5b21b6;
+  --color-json-key: #2563eb;
   --color-json-str: #0f766e;
   --color-json-num: #b45309;
-  --color-json-lit: #1d4ed8;
+  --color-json-lit: #7c3aed;
   --radius: 8px;
   --radius-sm: 4px;
-  --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-  --font-mono: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+  --font:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, -apple-system, 'Helvetica Neue',
+    sans-serif;
+  --font-mono: 'JetBrains Mono', 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
-    --color-bg: #0d0618;
-    --color-surface: #1a0f2e;
-    --color-border: #2e1f52;
-    --color-text: #f0eaff;
-    --color-text-muted: #9d8fc4;
-    --color-warn-bg: #451a03;
+    --color-bg: #0f172a;
+    --color-surface: #1e293b;
+    --color-border: #334155;
+    --color-text: #f1f5f9;
+    --color-text-muted: #94a3b8;
+    --color-primary: #3b82f6;
+    --color-primary-hover: #2563eb;
+    --color-warn-bg: #422006;
     --color-warn-border: #92400e;
     --color-warn-text: #fde68a;
-    --color-json-key: #c084fc;
+    --color-json-key: #60a5fa;
     --color-json-str: #34d399;
     --color-json-num: #fbbf24;
-    --color-json-lit: #60a5fa;
+    --color-json-lit: #a78bfa;
   }
 }
 
 [data-theme='dark'] {
-  --color-bg: #0d0618;
-  --color-surface: #1a0f2e;
-  --color-border: #2e1f52;
-  --color-text: #f0eaff;
-  --color-text-muted: #9d8fc4;
-  --color-warn-bg: #451a03;
+  --color-bg: #0f172a;
+  --color-surface: #1e293b;
+  --color-border: #334155;
+  --color-text: #f1f5f9;
+  --color-text-muted: #94a3b8;
+  --color-primary: #3b82f6;
+  --color-primary-hover: #2563eb;
+  --color-warn-bg: #422006;
   --color-warn-border: #92400e;
   --color-warn-text: #fde68a;
-  --color-json-key: #c084fc;
+  --color-json-key: #60a5fa;
   --color-json-str: #34d399;
   --color-json-num: #fbbf24;
-  --color-json-lit: #60a5fa;
+  --color-json-lit: #a78bfa;
 }
 
 /* ── Base reset ────────────────────────────────────────────────────────────── */

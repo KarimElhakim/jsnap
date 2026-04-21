@@ -1,6 +1,6 @@
 /**
  * Generates placeholder PNG icons for JSnap using only Node.js built-ins.
- * Produces solid purple squares (#5B21B6) with a white "J" glyph.
+ * Produces solid blue squares (#2563EB) with a white "J" glyph.
  * Run: node scripts/generate-placeholder-icons.mjs
  */
 
@@ -75,8 +75,8 @@ function encodePng(width, height, getPixelRgb) {
   ]);
 }
 
-// Purple/indigo background: #5B21B6
-const BG = [0x5b, 0x21, 0xb6];
+// Blue-600 background: #2563EB
+const BG = [0x25, 0x63, 0xeb];
 // White glyph
 const FG = [0xff, 0xff, 0xff];
 
