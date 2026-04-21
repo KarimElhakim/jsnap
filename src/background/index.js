@@ -71,17 +71,17 @@ on(MESSAGE_TYPES.CANCEL_REQUEST, ({ requestId }) => {
 });
 
 on(MESSAGE_TYPES.EXTRACT_REQUEST, async (payload) => {
-  const { tabId, providerId, hint, requestId } = payload ?? {};
+  const { tabId, providerId, hint, mode, requestId } = payload ?? {};
   if (!tabId || !providerId || !requestId) {
     throw new ConfigError(ERROR_CODES.CONFIG_INVALID, 'tabId, providerId, and requestId are required');
   }
-  runExtraction({ tabId, providerId, hint, requestId }).catch((err) => {
+  runExtraction({ tabId, providerId, hint, mode, requestId }).catch((err) => {
     logger.error('Extraction rejected unexpectedly', err);
   });
   return { accepted: true, requestId };
 });
 
-async function runExtraction({ tabId, providerId, hint, requestId }) {
+async function runExtraction({ tabId, providerId, hint, mode, requestId }) {
   const controller = new AbortController();
   inFlight.set(requestId, controller);
 
@@ -112,6 +112,7 @@ async function runExtraction({ tabId, providerId, hint, requestId }) {
       pageTitle: page.title,
       pageUrl: page.url,
       userHint: hint,
+      mode,
       signal: controller.signal,
       onProgress: (evt) => push(MESSAGE_TYPES.EXTRACT_PROGRESS, evt),
     });

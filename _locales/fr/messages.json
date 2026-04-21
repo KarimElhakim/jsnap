@@ -7,6 +7,14 @@
   "popup_extract_in_progress": { "message": "Extraction en cours…" },
   "popup_extracting": { "message": "Extraction" },
 
+  "popup_mode_label": { "message": "Mode" },
+  "popup_mode_structure": { "message": "Structure" },
+  "popup_mode_summary": { "message": "Résumé" },
+  "popup_mode_data": { "message": "Données" },
+  "popup_mode_help": {
+    "message": "Structure préserve le texte complet. Résumé le condense. Données extrait uniquement les tableaux et spécifications."
+  },
+
   "popup_hint_label": { "message": "Indication (optionnel)" },
   "popup_hint_placeholder": { "message": "ex. prix des produits, titres d'articles…" },
   "popup_hint_help": { "message": "Ciblez l'extraction sur un contenu spécifique de la page." },

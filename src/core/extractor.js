@@ -6,7 +6,7 @@
  * chunking is engaged).
  */
 
-import { buildExtractionPrompt, PROMPT_VERSION } from './prompt.js';
+import { buildExtractionPrompt, PROMPT_VERSION, DEFAULT_MODE } from './prompt.js';
 import { chunk, estimateTokens, mergeResults } from './chunker.js';
 import { validateAndParse } from './validator.js';
 import { ERROR_CODES, ContentTooLargeError, CancelledError } from './errors.js';
@@ -25,7 +25,16 @@ const MIN_USEFUL_CONTENT_CHARS = 40;
  * @returns {Promise<object>} the stamped JSON result
  */
 export async function extract(args) {
-  const { provider, pageText, pageTitle, pageUrl, userHint, signal, onProgress } = args;
+  const {
+    provider,
+    pageText,
+    pageTitle,
+    pageUrl,
+    userHint,
+    mode = DEFAULT_MODE,
+    signal,
+    onProgress,
+  } = args;
 
   if (signal?.aborted) throw new CancelledError(ERROR_CODES.CANCELLED, 'Cancelled before start');
   if (!pageText || pageText.trim().length < MIN_USEFUL_CONTENT_CHARS) {
@@ -69,6 +78,7 @@ export async function extract(args) {
       pageTitle,
       pageUrl,
       userHint,
+      mode,
     });
 
     const response = await provider.complete({
@@ -85,14 +95,15 @@ export async function extract(args) {
   onProgress?.({ stage: 'parsing', pct: 0.95 });
 
   const merged = chunks.length === 1 ? results[0] : mergeResults(results);
-  return stampMeta(merged, { pageUrl, userHint, providerId: provider.constructor.id });
+  return stampMeta(merged, { pageUrl, userHint, mode, providerId: provider.constructor.id });
 }
 
-function stampMeta(result, { pageUrl, userHint, providerId }) {
+function stampMeta(result, { pageUrl, userHint, mode, providerId }) {
   const meta = {
     sourceUrl: pageUrl ?? null,
     extractedAt: new Date().toISOString(),
     userHint: (userHint ?? '').trim() || null,
+    mode,
     promptVersion: PROMPT_VERSION,
     providerId,
     ...(result?.__meta ?? {}),

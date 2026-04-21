@@ -198,6 +198,46 @@ textarea {
   color: var(--color-warn-text);
 }
 
+/* ── Segmented control (mode selector) ─────────────────────────────────────── */
+.segmented {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 2px;
+  gap: 2px;
+}
+
+.segmented__option {
+  border: none;
+  background: transparent;
+  color: var(--color-text-muted);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 6px 8px;
+  border-radius: calc(var(--radius-sm) - 2px);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.segmented__option:hover:not(:disabled):not(.segmented__option--active) {
+  color: var(--color-text);
+}
+
+.segmented__option--active {
+  background: var(--color-bg);
+  color: var(--color-primary);
+  font-weight: 600;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.segmented__option:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 /* ── Spinner ───────────────────────────────────────────────────────────────── */
 @keyframes spin {
   to {

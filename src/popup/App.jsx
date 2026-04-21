@@ -3,6 +3,7 @@ import { useEffect } from 'preact/hooks';
 import { Platform } from '../core/platform.js';
 import { message, MESSAGE_TYPES, MESSAGE_VERSION } from '../background/router.js';
 import { ProviderSelect } from './components/ProviderSelect.jsx';
+import { ModeSelect } from './components/ModeSelect.jsx';
 import { HintInput } from './components/HintInput.jsx';
 import { ExtractButton } from './components/ExtractButton.jsx';
 import { ResultView } from './components/ResultView.jsx';
@@ -14,6 +15,7 @@ import { useI18n } from './hooks/useI18n.js';
 // Module-level signals — stable across re-renders, survive popup re-open.
 const providers = signal([]);
 const selectedProviderId = signal('');
+const mode = signal('structure');
 const hint = signal('');
 const phase = signal('idle'); // 'idle' | 'extracting' | 'done' | 'error'
 const progress = signal({ stage: '', pct: 0 });
@@ -99,6 +101,7 @@ export function App() {
       message(MESSAGE_TYPES.EXTRACT_REQUEST, {
         tabId: activeTabId.value,
         providerId: selectedProviderId.value,
+        mode: mode.value,
         hint: hint.value.trim() || undefined,
         requestId,
       }),
@@ -136,6 +139,14 @@ export function App() {
           selectedProviderId.value = id;
           refreshUsage(id);
         }}
+      />
+
+      <ModeSelect
+        value={mode.value}
+        onChange={(m) => {
+          mode.value = m;
+        }}
+        disabled={phase.value === 'extracting'}
       />
 
       <HintInput

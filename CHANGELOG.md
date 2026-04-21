@@ -6,6 +6,31 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-04-21
+
+### Added
+
+- **Extraction Mode selector** with three presets:
+  - **Structure** (default) — lossless preservation of page content, organized into sections. Best for articles, guides, walkthroughs, documentation.
+  - **Summary** — condensed digest with key points.
+  - **Data** — structured data only (tables, specs, lists); drops narrative prose.
+- Prompt versioned to `1.1.0`. Every result now carries `__meta.mode` so stored extractions are self-describing.
+- Sanitizer preserves `<pre>` and `<code>` blocks as markdown-fenced strings, fixing truncation on sites like GameFAQs where walkthroughs live inside `<pre>`.
+- Sanitizer added a lightweight fallback pass: if the aggressive pass returns less than 300 chars, the content script falls back to `innerText` so users always get something usable.
+- `content.empty` errors now include the char count and URL in `context` for debuggability.
+- Content script guards against duplicate listener registration when re-injected on demand.
+
+### Fixed
+
+- **Content script now auto-injects on demand** when the background cannot reach a tab (typically because the tab predates the extension install). Before: generic "unexpected error". After: seamless injection and retry.
+- **Restricted URLs detected** (`chrome://`, Web Store, `about:`) and return a clear, actionable error message.
+- **Error UI now shows the error code and raw message** beneath the friendly i18n copy, so users can report precise debug info.
+- Tightened sanitizer noise regex: legitimate class fragments like `related-news` or `ad-content-card` are no longer stripped.
+
+### Changed
+
+- Default extraction mode is now **Structure** (lossless) instead of the previous implicit summarization bias. Users asking for a summary must select it explicitly.
+
 ## [0.1.0] - 2026-04-21
 
 ### Added
@@ -21,5 +46,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Settings page for provider selection, model selection, and API-key management.
 - MIT license, Buy Me a Coffee and GitHub Sponsors support links.
 
-[Unreleased]: https://github.com/KarimElhakim/jsnap/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/KarimElhakim/jsnap/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/KarimElhakim/jsnap/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/KarimElhakim/jsnap/releases/tag/v0.1.0
