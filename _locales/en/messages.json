@@ -1,0 +1,60 @@
+{
+  "app_name": { "message": "JSnap" },
+  "app_description": { "message": "One-click page-to-JSON. BYOK. Free forever." },
+  "app_tagline": { "message": "Page to JSON in one click" },
+
+  "popup_extract_button": { "message": "Extract JSON" },
+  "popup_extract_in_progress": { "message": "Extracting…" },
+  "popup_extracting": { "message": "Extracting" },
+
+  "popup_hint_label": { "message": "Hint (optional)" },
+  "popup_hint_placeholder": { "message": "e.g. product prices, article headings…" },
+  "popup_hint_help": { "message": "Scope the extraction to specific content on the page." },
+
+  "popup_provider_label": { "message": "Provider" },
+
+  "popup_result_title": { "message": "Result" },
+  "popup_result_copy": { "message": "Copy" },
+  "popup_result_download": { "message": "Download" },
+  "popup_result_copied": { "message": "Copied!" },
+
+  "popup_usage_today": { "message": "Today: $1 requests" },
+  "popup_usage_limit_nearing": { "message": "Approaching daily limit" },
+
+  "popup_no_key_configured": { "message": "No API key configured." },
+  "popup_open_settings": { "message": "Open settings" },
+
+  "popup_donate_text": { "message": "Support JSnap" },
+
+  "options_title": { "message": "JSnap Settings" },
+  "options_provider_heading": { "message": "API Providers" },
+  "options_api_key_label": { "message": "API Key" },
+  "options_api_key_placeholder": { "message": "Paste your API key…" },
+  "options_model_label": { "message": "Model" },
+  "options_base_url_label": { "message": "Base URL" },
+
+  "options_default_provider_label": { "message": "Default provider" },
+  "options_theme_label": { "message": "Theme" },
+  "options_theme_system": { "message": "System" },
+  "options_theme_light": { "message": "Light" },
+  "options_theme_dark": { "message": "Dark" },
+
+  "options_security_notice": {
+    "message": "API keys are stored locally in your browser and are never transmitted to any server other than the provider you select."
+  },
+
+  "options_clear_keys": { "message": "Clear all keys" },
+  "options_clear_keys_confirm": { "message": "Confirm: clear all keys?" },
+  "options_saved": { "message": "Saved!" },
+
+  "error_config_missing_key": { "message": "API key is not configured." },
+  "error_provider_auth": { "message": "Authentication failed. Check your API key." },
+  "error_provider_rate_limit": { "message": "Rate limit reached. Try again shortly." },
+  "error_provider_network": { "message": "Network error. Check your connection." },
+  "error_provider_failed": { "message": "Provider returned an error." },
+  "error_schema_unrepairable": { "message": "Response could not be parsed as JSON." },
+  "error_content_too_large": { "message": "Page content is too large to extract." },
+  "error_content_empty": { "message": "No extractable content found on this page." },
+  "error_cancelled": { "message": "Extraction cancelled." },
+  "error_generic": { "message": "An unexpected error occurred." }
+}

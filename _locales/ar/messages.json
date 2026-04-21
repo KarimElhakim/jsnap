@@ -1,0 +1,60 @@
+{
+  "app_name": { "message": "JSnap" },
+  "app_description": { "message": "استخرج JSON من أي صفحة بنقرة واحدة. مجاني للأبد." },
+  "app_tagline": { "message": "حوّل أي صفحة إلى JSON بنقرة" },
+
+  "popup_extract_button": { "message": "استخراج JSON" },
+  "popup_extract_in_progress": { "message": "جارٍ الاستخراج…" },
+  "popup_extracting": { "message": "يستخرج" },
+
+  "popup_hint_label": { "message": "تلميح (اختياري)" },
+  "popup_hint_placeholder": { "message": "مثال: أسعار المنتجات، عناوين المقالات…" },
+  "popup_hint_help": { "message": "حدّد نطاق الاستخراج لمحتوى معين في الصفحة." },
+
+  "popup_provider_label": { "message": "المزوّد" },
+
+  "popup_result_title": { "message": "النتيجة" },
+  "popup_result_copy": { "message": "نسخ" },
+  "popup_result_download": { "message": "تنزيل" },
+  "popup_result_copied": { "message": "تم النسخ!" },
+
+  "popup_usage_today": { "message": "اليوم: $1 طلب" },
+  "popup_usage_limit_nearing": { "message": "الاقتراب من الحد اليومي" },
+
+  "popup_no_key_configured": { "message": "لم يتم تكوين مفتاح API." },
+  "popup_open_settings": { "message": "فتح الإعدادات" },
+
+  "popup_donate_text": { "message": "دعم JSnap" },
+
+  "options_title": { "message": "إعدادات JSnap" },
+  "options_provider_heading": { "message": "مزودو الذكاء الاصطناعي" },
+  "options_api_key_label": { "message": "مفتاح API" },
+  "options_api_key_placeholder": { "message": "الصق مفتاح API هنا…" },
+  "options_model_label": { "message": "النموذج" },
+  "options_base_url_label": { "message": "عنوان URL الأساسي" },
+
+  "options_default_provider_label": { "message": "المزوّد الافتراضي" },
+  "options_theme_label": { "message": "المظهر" },
+  "options_theme_system": { "message": "تلقائي" },
+  "options_theme_light": { "message": "فاتح" },
+  "options_theme_dark": { "message": "داكن" },
+
+  "options_security_notice": {
+    "message": "تُخزَّن مفاتيح API محليًا في متصفحك ولا تُرسل إلى أي خادم سوى المزوّد الذي تختاره."
+  },
+
+  "options_clear_keys": { "message": "مسح جميع المفاتيح" },
+  "options_clear_keys_confirm": { "message": "تأكيد: مسح جميع المفاتيح؟" },
+  "options_saved": { "message": "تم الحفظ!" },
+
+  "error_config_missing_key": { "message": "لم يتم تكوين مفتاح API." },
+  "error_provider_auth": { "message": "فشل التحقق. تحقق من مفتاح API." },
+  "error_provider_rate_limit": { "message": "تم بلوغ حد الطلبات. حاول مجددًا بعد قليل." },
+  "error_provider_network": { "message": "خطأ في الشبكة. تحقق من اتصالك." },
+  "error_provider_failed": { "message": "أعاد المزوّد خطأ." },
+  "error_schema_unrepairable": { "message": "تعذّر تحليل الاستجابة بصيغة JSON." },
+  "error_content_too_large": { "message": "محتوى الصفحة كبير جدًا للاستخراج." },
+  "error_content_empty": { "message": "لم يُعثر على محتوى قابل للاستخراج." },
+  "error_cancelled": { "message": "تم إلغاء الاستخراج." },
+  "error_generic": { "message": "حدث خطأ غير متوقع." }
+}

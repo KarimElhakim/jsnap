@@ -1,0 +1,60 @@
+{
+  "app_name": { "message": "JSnap" },
+  "app_description": { "message": "Page vers JSON en un clic. BYOK. Gratuit pour toujours." },
+  "app_tagline": { "message": "Convertit les pages en JSON en un clic" },
+
+  "popup_extract_button": { "message": "Extraire JSON" },
+  "popup_extract_in_progress": { "message": "Extraction en cours…" },
+  "popup_extracting": { "message": "Extraction" },
+
+  "popup_hint_label": { "message": "Indication (optionnel)" },
+  "popup_hint_placeholder": { "message": "ex. prix des produits, titres d'articles…" },
+  "popup_hint_help": { "message": "Ciblez l'extraction sur un contenu spécifique de la page." },
+
+  "popup_provider_label": { "message": "Fournisseur" },
+
+  "popup_result_title": { "message": "Résultat" },
+  "popup_result_copy": { "message": "Copier" },
+  "popup_result_download": { "message": "Télécharger" },
+  "popup_result_copied": { "message": "Copié !" },
+
+  "popup_usage_today": { "message": "Aujourd'hui : $1 requêtes" },
+  "popup_usage_limit_nearing": { "message": "Approche de la limite quotidienne" },
+
+  "popup_no_key_configured": { "message": "Aucune clé API configurée." },
+  "popup_open_settings": { "message": "Ouvrir les paramètres" },
+
+  "popup_donate_text": { "message": "Soutenir JSnap" },
+
+  "options_title": { "message": "Paramètres JSnap" },
+  "options_provider_heading": { "message": "Fournisseurs d'IA" },
+  "options_api_key_label": { "message": "Clé API" },
+  "options_api_key_placeholder": { "message": "Collez votre clé API…" },
+  "options_model_label": { "message": "Modèle" },
+  "options_base_url_label": { "message": "URL de base" },
+
+  "options_default_provider_label": { "message": "Fournisseur par défaut" },
+  "options_theme_label": { "message": "Thème" },
+  "options_theme_system": { "message": "Système" },
+  "options_theme_light": { "message": "Clair" },
+  "options_theme_dark": { "message": "Sombre" },
+
+  "options_security_notice": {
+    "message": "Les clés API sont stockées localement dans votre navigateur et ne sont jamais transmises à un serveur autre que le fournisseur sélectionné."
+  },
+
+  "options_clear_keys": { "message": "Effacer toutes les clés" },
+  "options_clear_keys_confirm": { "message": "Confirmer : effacer toutes les clés ?" },
+  "options_saved": { "message": "Enregistré !" },
+
+  "error_config_missing_key": { "message": "La clé API n'est pas configurée." },
+  "error_provider_auth": { "message": "Échec de l'authentification. Vérifiez votre clé API." },
+  "error_provider_rate_limit": { "message": "Limite de requêtes atteinte. Réessayez dans un moment." },
+  "error_provider_network": { "message": "Erreur réseau. Vérifiez votre connexion." },
+  "error_provider_failed": { "message": "Le fournisseur a retourné une erreur." },
+  "error_schema_unrepairable": { "message": "La réponse n'a pas pu être analysée en JSON." },
+  "error_content_too_large": { "message": "Le contenu de la page est trop volumineux pour être extrait." },
+  "error_content_empty": { "message": "Aucun contenu extractible trouvé sur cette page." },
+  "error_cancelled": { "message": "Extraction annulée." },
+  "error_generic": { "message": "Une erreur inattendue s'est produite." }
+}

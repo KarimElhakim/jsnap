@@ -73,6 +73,10 @@ export const Platform = {
       assertChrome();
       return chromeApi.runtime.getManifest();
     },
+    openOptionsPage() {
+      assertChrome();
+      return promisify((cb) => chromeApi.runtime.openOptionsPage(cb));
+    },
   },
 
   tabs: {

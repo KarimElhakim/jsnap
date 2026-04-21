@@ -1,0 +1,228 @@
+/* ── Design tokens (mirrors popup tokens) ──────────────────────────────────── */
+:root {
+  --color-bg: #ffffff;
+  --color-surface: #f5f3ff;
+  --color-border: #e0daf7;
+  --color-text: #1a0a36;
+  --color-text-muted: #6b6b80;
+  --color-primary: #5b21b6;
+  --color-primary-hover: #4c1d95;
+  --color-primary-fg: #ffffff;
+  --color-danger: #dc2626;
+  --color-danger-hover: #b91c1c;
+  --color-warn-bg: #fffbeb;
+  --color-warn-border: #fcd34d;
+  --color-warn-text: #92400e;
+  --color-success: #16a34a;
+  --radius: 8px;
+  --radius-sm: 4px;
+  --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --color-bg: #0d0618;
+    --color-surface: #1a0f2e;
+    --color-border: #2e1f52;
+    --color-text: #f0eaff;
+    --color-text-muted: #9d8fc4;
+    --color-warn-bg: #451a03;
+    --color-warn-border: #92400e;
+    --color-warn-text: #fde68a;
+  }
+}
+
+[data-theme='dark'] {
+  --color-bg: #0d0618;
+  --color-surface: #1a0f2e;
+  --color-border: #2e1f52;
+  --color-text: #f0eaff;
+  --color-text-muted: #9d8fc4;
+  --color-warn-bg: #451a03;
+  --color-warn-border: #92400e;
+  --color-warn-text: #fde68a;
+}
+
+/* ── Base ──────────────────────────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font);
+  font-size: 14px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Layout ────────────────────────────────────────────────────────────────── */
+.options {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 32px 24px 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+h1 {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+h2 {
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: var(--color-text);
+}
+
+section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* ── Provider card ─────────────────────────────────────────────────────────── */
+.provider-card {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: var(--color-surface);
+}
+
+.provider-card__name {
+  font-weight: 600;
+  font-size: 13px;
+}
+
+/* ── Form controls ─────────────────────────────────────────────────────────── */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+input[type='text'],
+input[type='password'],
+select {
+  padding: 8px 10px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font);
+  font-size: 13px;
+  width: 100%;
+  transition: border-color 0.15s;
+}
+
+input:focus,
+select:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-primary) 20%, transparent);
+}
+
+/* ── Buttons ───────────────────────────────────────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 18px;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-family: var(--font);
+  font-size: 14px;
+  font-weight: 600;
+  transition: background 0.15s;
+}
+
+.btn--primary {
+  background: var(--color-primary);
+  color: var(--color-primary-fg);
+}
+
+.btn--primary:hover {
+  background: var(--color-primary-hover);
+}
+
+.btn--danger {
+  background: transparent;
+  color: var(--color-danger);
+  border: 1px solid var(--color-danger);
+}
+
+.btn--danger:hover {
+  background: #fee2e2;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+  padding-top: 8px;
+}
+
+/* ── Notice ────────────────────────────────────────────────────────────────── */
+.notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+}
+
+.notice--warning {
+  background: var(--color-warn-bg);
+  border: 1px solid var(--color-warn-border);
+  color: var(--color-warn-text);
+}
+
+.notice__dismiss {
+  margin-left: auto;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: inherit;
+  font-size: 14px;
+  flex-shrink: 0;
+  padding: 0 2px;
+}
+
+/* ── Theme radios ──────────────────────────────────────────────────────────── */
+.radio-group {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.radio-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--color-text);
+}

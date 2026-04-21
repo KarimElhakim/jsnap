@@ -1,0 +1,60 @@
+{
+  "app_name": { "message": "JSnap" },
+  "app_description": { "message": "Página a JSON en un clic. BYOK. Gratis para siempre." },
+  "app_tagline": { "message": "Convierte páginas a JSON en un clic" },
+
+  "popup_extract_button": { "message": "Extraer JSON" },
+  "popup_extract_in_progress": { "message": "Extrayendo…" },
+  "popup_extracting": { "message": "Extrayendo" },
+
+  "popup_hint_label": { "message": "Sugerencia (opcional)" },
+  "popup_hint_placeholder": { "message": "ej. precios de productos, títulos de artículos…" },
+  "popup_hint_help": { "message": "Enfoca la extracción en contenido específico de la página." },
+
+  "popup_provider_label": { "message": "Proveedor" },
+
+  "popup_result_title": { "message": "Resultado" },
+  "popup_result_copy": { "message": "Copiar" },
+  "popup_result_download": { "message": "Descargar" },
+  "popup_result_copied": { "message": "¡Copiado!" },
+
+  "popup_usage_today": { "message": "Hoy: $1 solicitudes" },
+  "popup_usage_limit_nearing": { "message": "Acercándose al límite diario" },
+
+  "popup_no_key_configured": { "message": "No se ha configurado ninguna clave API." },
+  "popup_open_settings": { "message": "Abrir configuración" },
+
+  "popup_donate_text": { "message": "Apoya JSnap" },
+
+  "options_title": { "message": "Configuración de JSnap" },
+  "options_provider_heading": { "message": "Proveedores de IA" },
+  "options_api_key_label": { "message": "Clave API" },
+  "options_api_key_placeholder": { "message": "Pega tu clave API…" },
+  "options_model_label": { "message": "Modelo" },
+  "options_base_url_label": { "message": "URL base" },
+
+  "options_default_provider_label": { "message": "Proveedor predeterminado" },
+  "options_theme_label": { "message": "Tema" },
+  "options_theme_system": { "message": "Sistema" },
+  "options_theme_light": { "message": "Claro" },
+  "options_theme_dark": { "message": "Oscuro" },
+
+  "options_security_notice": {
+    "message": "Las claves API se almacenan localmente en tu navegador y nunca se transmiten a ningún servidor que no sea el proveedor que selecciones."
+  },
+
+  "options_clear_keys": { "message": "Borrar todas las claves" },
+  "options_clear_keys_confirm": { "message": "¿Confirmar: borrar todas las claves?" },
+  "options_saved": { "message": "¡Guardado!" },
+
+  "error_config_missing_key": { "message": "La clave API no está configurada." },
+  "error_provider_auth": { "message": "Error de autenticación. Verifica tu clave API." },
+  "error_provider_rate_limit": { "message": "Límite de solicitudes alcanzado. Inténtalo de nuevo pronto." },
+  "error_provider_network": { "message": "Error de red. Verifica tu conexión." },
+  "error_provider_failed": { "message": "El proveedor devolvió un error." },
+  "error_schema_unrepairable": { "message": "No se pudo analizar la respuesta como JSON." },
+  "error_content_too_large": { "message": "El contenido de la página es demasiado grande para extraer." },
+  "error_content_empty": { "message": "No se encontró contenido extraíble en esta página." },
+  "error_cancelled": { "message": "Extracción cancelada." },
+  "error_generic": { "message": "Se produjo un error inesperado." }
+}

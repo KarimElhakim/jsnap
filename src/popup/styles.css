@@ -1,0 +1,214 @@
+/* ── Design tokens ─────────────────────────────────────────────────────────── */
+:root {
+  --color-bg: #ffffff;
+  --color-surface: #f5f3ff;
+  --color-border: #e0daf7;
+  --color-text: #1a0a36;
+  --color-text-muted: #6b6b80;
+  --color-primary: #5b21b6;
+  --color-primary-hover: #4c1d95;
+  --color-primary-fg: #ffffff;
+  --color-danger: #dc2626;
+  --color-danger-hover: #b91c1c;
+  --color-warn-bg: #fffbeb;
+  --color-warn-border: #fcd34d;
+  --color-warn-text: #92400e;
+  --color-success: #16a34a;
+  --color-json-key: #5b21b6;
+  --color-json-str: #0f766e;
+  --color-json-num: #b45309;
+  --color-json-lit: #1d4ed8;
+  --radius: 8px;
+  --radius-sm: 4px;
+  --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  --font-mono: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --color-bg: #0d0618;
+    --color-surface: #1a0f2e;
+    --color-border: #2e1f52;
+    --color-text: #f0eaff;
+    --color-text-muted: #9d8fc4;
+    --color-warn-bg: #451a03;
+    --color-warn-border: #92400e;
+    --color-warn-text: #fde68a;
+    --color-json-key: #c084fc;
+    --color-json-str: #34d399;
+    --color-json-num: #fbbf24;
+    --color-json-lit: #60a5fa;
+  }
+}
+
+[data-theme='dark'] {
+  --color-bg: #0d0618;
+  --color-surface: #1a0f2e;
+  --color-border: #2e1f52;
+  --color-text: #f0eaff;
+  --color-text-muted: #9d8fc4;
+  --color-warn-bg: #451a03;
+  --color-warn-border: #92400e;
+  --color-warn-text: #fde68a;
+  --color-json-key: #c084fc;
+  --color-json-str: #34d399;
+  --color-json-num: #fbbf24;
+  --color-json-lit: #60a5fa;
+}
+
+/* ── Base reset ────────────────────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  width: 360px;
+  min-height: 200px;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font);
+  font-size: 13px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── App shell ─────────────────────────────────────────────────────────────── */
+.app {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+}
+
+/* ── Form controls ─────────────────────────────────────────────────────────── */
+label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-text-muted);
+  margin-bottom: 4px;
+}
+
+select,
+textarea,
+input[type='text'],
+input[type='password'] {
+  width: 100%;
+  padding: 7px 9px;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-text);
+  font-family: var(--font);
+  font-size: 13px;
+  transition: border-color 0.15s;
+}
+
+select:focus,
+textarea:focus,
+input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-primary) 20%, transparent);
+}
+
+textarea {
+  resize: none;
+  overflow: hidden;
+  min-height: 34px;
+  max-height: 72px;
+  field-sizing: content;
+}
+
+/* ── Buttons ───────────────────────────────────────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 600;
+  transition: background 0.15s, opacity 0.15s;
+}
+
+.btn--primary {
+  width: 100%;
+  background: var(--color-primary);
+  color: var(--color-primary-fg);
+}
+
+.btn--primary:hover:not(:disabled) {
+  background: var(--color-primary-hover);
+}
+
+.btn--primary:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.btn--ghost {
+  background: transparent;
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border);
+  padding: 5px 10px;
+  font-size: 12px;
+}
+
+.btn--ghost:hover:not(:disabled) {
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+.link-btn {
+  background: none;
+  border: none;
+  color: var(--color-primary);
+  cursor: pointer;
+  font-size: 13px;
+  text-decoration: underline;
+  padding: 0;
+}
+
+/* ── Notice banner ─────────────────────────────────────────────────────────── */
+.notice {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+}
+
+.notice--warning {
+  background: var(--color-warn-bg);
+  border: 1px solid var(--color-warn-border);
+  color: var(--color-warn-text);
+}
+
+/* ── Spinner ───────────────────────────────────────────────────────────────── */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid color-mix(in srgb, currentColor 30%, transparent);
+  border-top-color: currentColor;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  flex-shrink: 0;
+}
