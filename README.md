@@ -1,13 +1,13 @@
 # JSnap
 
-One-click page-to-JSON. BYOK. Free forever.
+One-click page-to-JSON. Free. Local-first.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-0.1.0-blue)](package.json)
+[![Version](https://img.shields.io/badge/version-0.2.0-blue)](package.json)
 [![CI](https://github.com/KarimElhakim/jsnap/actions/workflows/ci.yml/badge.svg)](https://github.com/KarimElhakim/jsnap/actions/workflows/ci.yml)
-[![Chrome Web Store](https://img.shields.io/badge/Chrome%20Web%20Store-coming%20soon-lightgrey)](https://github.com/KarimElhakim/jsnap)
-[![GitHub Stars](https://img.shields.io/github/stars/KarimElhakim/jsnap?style=flat)](https://github.com/KarimElhakim/jsnap/stargazers)
-[![GitHub Forks](https://img.shields.io/github/forks/KarimElhakim/jsnap?style=flat)](https://github.com/KarimElhakim/jsnap/network/members)
+[![Chrome Web Store](https://img.shields.io/badge/Chrome%20Web%20Store-coming%20soon-lightgrey)](https://github.com/KarimElhakim/jsnap/releases)
+[![GitHub stars](https://img.shields.io/github/stars/KarimElhakim/jsnap?style=flat)](https://github.com/KarimElhakim/jsnap/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/KarimElhakim/jsnap?style=flat)](https://github.com/KarimElhakim/jsnap/network/members)
 
 [![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
 [![HTML](https://img.shields.io/badge/HTML-E34F26?logo=html5&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/HTML)
@@ -19,171 +19,203 @@ One-click page-to-JSON. BYOK. Free forever.
 [![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-support-FFDD00?logo=buymeacoffee&logoColor=black)](https://buymeacoffee.com/karimali)
 [![GitHub Sponsors](https://img.shields.io/badge/GitHub%20Sponsors-sponsor-EA4AAA?logo=githubsponsors&logoColor=white)](https://github.com/sponsors/KarimElhakim)
 
-JSnap is a Chrome extension that extracts structured JSON from any web page using your own LLM API key — no backend, no account, no subscription.
+JSnap turns any web page into clean, typed JSON in one click. No account. No API key for the default mode. Nothing leaves your browser.
 
 ---
 
-## Screenshots
+## Why I built this
 
-<!-- Add screenshots once captured. -->
-<!-- ![Popup](docs/screenshots/popup.png) -->
-<!-- ![Options page](docs/screenshots/options.png) -->
+I was working on a side project and needed to convert a long GameFAQs walkthrough into JSON so I could use it elsewhere. Obvious next step: find a Chrome extension that could do it. How hard could it be?
 
----
+Turns out the Chrome Web Store is packed with scrapers — Visual Web Scraper, DataPick, Simplescraper, Data Scraper, Easy Scraper, Instant Data Scraper, plenty of others. They're all variations on the same pattern: click a field on a page, and the extension harvests that same field across many pages, exports a CSV. They exist for market research, price monitoring, lead generation, competitor analysis. Good tools for that work. Not what I needed.
 
-## Highlights
+I didn't want to pick fields. I didn't want to configure a sitemap, train a selector, or sign up for a plan. I wanted to point at one page, hit extract, and get the entire content of that page back as JSON — every paragraph, list, table, code block, and heading, with structure intact. Nothing more, nothing less.
 
-- **BYOK** — keys are stored only in `chrome.storage.local` and sent only to the provider you selected.
-- **Free forever** — no subscription, no account, no backend.
-- **Four providers** — Gemini, Groq, Ollama (local), and any OpenAI-compatible endpoint (OpenRouter, Together, LM Studio, LocalAI, self-hosted).
-- **Five languages** — English, Arabic (RTL), Spanish, French, German.
-- **Light and dark themes** — follows `prefers-color-scheme` with a manual override.
-- **Manifest V3** — built for Chrome's current extension platform.
-- **WCAG AA** — accessible color contrast across both themes.
-- **Daily usage meter** — per-provider rolling counters so you can track free-tier consumption.
-- **Optional extraction hint** — scope the output with a plain-English description.
-- **Typed error handling** — every failure surfaces a machine-readable code, not a raw stack trace.
+I couldn't find that. So I built it.
 
----
+## What JSnap actually does
 
-## Quick start
+One page. One click. Full content. As JSON.
 
-### Option A — Chrome Web Store (coming soon)
+JSnap walks the DOM directly. It strips the boilerplate (navigation, ads, scripts, cookie banners, footers), then emits a typed tree of sections and content blocks in document order. Every block has a stable `type` discriminator, so downstream code can `switch` on it without guessing:
 
-The extension has not been listed yet. Watch this repository for the announcement.
+- `paragraph`
+- `list` (ordered or not)
+- `table` (headers plus rows)
+- `code` (preserved verbatim — walkthroughs, code snippets, ASCII art)
+- `quote`
+- `image` (src, alt, caption)
 
-### Option B — Load unpacked from `dist/`
+For old-school pages that dump their entire content into one big `<pre>` block — GameFAQs walkthroughs, man pages, FAQ documents — JSnap detects heading patterns (underlined titles, roman-numeral sections, numbered chapters) and restores the section hierarchy automatically.
 
-1. Install [Node.js 20+](https://nodejs.org/).
-2. Clone the repository:
-   ```
-   git clone https://github.com/KarimElhakim/jsnap.git
-   cd jsnap
-   ```
-3. Install dependencies:
-   ```
-   npm install
-   ```
-4. Build the extension:
-   ```
-   npm run build
-   ```
-5. Open Chrome and navigate to `chrome://extensions`.
-6. Enable **Developer mode** (toggle in the top-right corner).
-7. Click **Load unpacked** and select the `dist/` folder.
-8. The JSnap icon appears in your toolbar. Click it to open the popup.
-9. Open the options page, enter your API key for your chosen provider, and save.
+## How JSnap is different
+
+A lot of extensions in this space lean on one of two approaches:
+
+1. **Visual scrapers** (Visual Web Scraper, Simplescraper, Data Scraper, the dozens on the Chrome Web Store). You click elements, configure selectors, maybe run across many pages, export CSV. Great for "extract prices across 500 product URLs." Not for "give me this whole article as JSON."
+2. **AI-powered extractors** (DataPick, Web to JSON, most of the "AI web scraper" crowd). You describe what you want, the extension uploads the page to an LLM, the LLM returns JSON. Powerful when you need fuzzy extraction, but you're trading latency, API costs, truncation limits, quota management, and "send page to cloud" privacy for something that deterministic code can do instantly.
+
+JSnap's default mode is neither. It's a deterministic DOM-to-JSON translator — 100 ms per page, no network, no key, no cost, same input always gives the same output. Feed it your page, get back a faithful representation. That's the whole product.
+
+The LLM modes are there for when you actually want intelligence on top (summaries, specific-field extraction, etc.) — bring your own key for Gemini, Groq, Ollama, or any OpenAI-compatible endpoint. But they're optional. You never need them.
+
+## Features
+
+- **Raw mode (default):** deterministic, instant, free, local. No API key. Same input, same output, every time.
+- **Optional LLM modes (BYOK):** Structure (LLM preserves full text), Summary (condensed digest), Data (tables and specs only).
+- **Providers for LLM modes:** Google Gemini, Groq, Ollama (local), any OpenAI-compatible endpoint (OpenRouter, Together, LM Studio, vLLM, self-hosted).
+- **Typed output schema:** every content block has a `type` discriminator so downstream code doesn't have to guess.
+- **Works on stubborn pages:** heading detection inside `<pre>` blocks handles GameFAQs walkthroughs, man pages, ASCII-styled FAQs.
+- **Five UI languages:** English, Arabic (RTL), Spanish, French, German. More welcome via PR.
+- **Light and dark themes** with system preference detection.
+- **Manifest V3**, targets Chrome 120+.
+- **MIT licensed. No telemetry. No account. No cloud.**
 
 ---
 
-## Get a free Gemini API key in 60 seconds
+## Install
 
-No credit card required.
+### Chrome Web Store
 
-1. Go to [aistudio.google.com/apikey](https://aistudio.google.com/apikey).
-2. Sign in with a Google account.
-3. Click **Create API key**.
-4. Copy the key.
-5. Open the JSnap options page, select **Gemini**, paste the key, and save.
+Coming soon. The build is ready; paid developer listing is pending.
 
----
+### Side-load (works today)
 
-## Providers
+1. Download the latest `jsnap-<version>.zip` from the [Releases page](https://github.com/KarimElhakim/jsnap/releases).
+2. Unzip it somewhere memorable.
+3. Open `chrome://extensions`.
+4. Turn on **Developer mode** (top-right toggle).
+5. Click **Load unpacked** and pick the unzipped folder.
 
-| Provider          | Free tier           | Requires key | Documentation                                                    |
-| ----------------- | ------------------- | ------------ | ---------------------------------------------------------------- |
-| Google Gemini     | Yes                 | Yes          | [aistudio.google.com/apikey](https://aistudio.google.com/apikey) |
-| Groq              | Yes                 | Yes          | [console.groq.com/keys](https://console.groq.com/keys)           |
-| Ollama (local)    | Yes — runs locally  | No           | [ollama.com/download](https://ollama.com/download)               |
-| OpenAI-compatible | Depends on endpoint | Usually yes  | Varies by endpoint                                               |
+The JSnap icon will appear in your toolbar.
 
 ---
 
-## Languages
+## Use it
 
-The extension ships with translations for the following locales:
+1. Open any regular web page — an article, a Wikipedia entry, a walkthrough, a documentation page.
+2. Click the JSnap icon.
+3. Click **Extract JSON**.
 
-- `en` — English (default)
-- `ar` — Arabic (right-to-left)
-- `es` — Spanish
-- `fr` — French
-- `de` — German
+That's the whole flow. No key, no signup, nothing to configure. You get clean JSON back in a second.
 
-Chrome selects the locale automatically based on your browser language. PRs adding additional locales are welcome.
+If you ever want the LLM modes (Structure / Summary / Data), open the JSnap options page and paste an API key. Good free options, no credit card required:
+
+- **Google AI Studio** for Gemini: [aistudio.google.com/apikey](https://aistudio.google.com/apikey)
+- **Groq** for Llama: [console.groq.com/keys](https://console.groq.com/keys)
+- **Ollama** for fully local models: [ollama.com/download](https://ollama.com/download)
+
+Keys live only in `chrome.storage.local` on your device. They go to the provider you picked and nowhere else.
 
 ---
 
-## How it works
+## Output shape
 
-When you click the extract button, the background service worker injects a content script that strips scripts, styles, ads, and boilerplate from the current page, then returns the cleaned text. The background worker builds a versioned extraction prompt from that text and any optional hint you provided, then sends a single `fetch` request to your chosen provider. The raw response is parsed and validated — with one automatic repair pass for common JSON formatting issues — and stamped with a `__meta` block containing the source URL and extraction timestamp. Your API key is read from `chrome.storage.local` inside the background service worker and is never exposed to the content script or the popup.
+```json
+{
+  "title": "Mega Man Battle Network 2 - Guide and Walkthrough",
+  "url": "https://gamefaqs.gamespot.com/...",
+  "description": null,
+  "language": "en",
+  "sections": [
+    {
+      "heading": "I. INTRODUCTION",
+      "level": 1,
+      "blocks": [
+        { "type": "paragraph", "text": "MegaMan Battle Network 2 was released..." },
+        { "type": "paragraph", "text": "My guide aims to lead the player..." }
+      ],
+      "subsections": []
+    },
+    {
+      "heading": "II. BASICS",
+      "level": 1,
+      "blocks": [],
+      "subsections": [
+        {
+          "heading": "GENERAL CONTROLS",
+          "level": 2,
+          "blocks": [
+            { "type": "code", "text": "Button:   Function:\nA         Accept/confirm...", "language": null }
+          ],
+          "subsections": []
+        }
+      ]
+    }
+  ],
+  "__meta": {
+    "mode": "raw",
+    "extractorVersion": "2.0.0",
+    "extractedAt": "2026-04-21T17:05:00.000Z",
+    "stats": { "sections": 47, "blocks": 1240, "characters": 342105, "elapsedMs": 87 }
+  }
+}
+```
+
+The schema is stable across minor versions. Every block has a `type`. If you're writing a tool that consumes JSnap output, you can rely on the shape.
 
 ---
 
 ## Privacy
 
-- No backend. No analytics. No telemetry.
-- API keys are stored exclusively in `chrome.storage.local` on your device.
-- Keys are transmitted only to the provider you selected, and only during an active extraction.
-- The logger redacts any value matching the pattern `api_key`, `apikey`, `authorization`, or `bearer` before writing to the console.
-- See [SECURITY.md](SECURITY.md) for the full disclosure policy.
+- No backend. No analytics. No telemetry. No account.
+- **Raw mode never leaves your browser.** It's pure JavaScript walking the DOM you already loaded.
+- **LLM modes** send the cleaned page content and your API key directly to the provider you picked (Gemini, Groq, Ollama, OpenAI-compatible). JSnap does not proxy, log, or intercept any of that traffic.
+- API keys are stored in `chrome.storage.local` on your device, unencrypted, which is the standard pattern for browser extensions that handle keys. The realistic threats here are browser-profile compromise and local malware — full-disk encryption on your OS is the right mitigation, not an extension-level passphrase. See [SECURITY.md](SECURITY.md) for the full reasoning and disclosure policy.
 
 ---
 
 ## Development
 
-**Prerequisites:** Node.js 20 or later.
+Requirements: Node.js 20 or later.
 
 ```
-npm install          # install dependencies
-npm run dev          # start Vite in watch mode (outputs to dist/)
-npm run build        # production build
-npm run package      # create jsnap-0.1.0.zip for Chrome Web Store submission
-npm run lint         # check formatting with Prettier
+npm install
+npm run dev       # Vite in watch mode, writes to dist/
+npm run build     # production build
+npm run package   # creates jsnap-<version>.zip for submission
+npm run format    # Prettier
 ```
 
-After running `npm run dev` or `npm run build`:
+Load the unpacked extension:
 
-1. Go to `chrome://extensions`.
-2. Enable **Developer mode**.
-3. Click **Load unpacked** and select the `dist/` folder.
-4. After each rebuild, click the reload icon next to JSnap in the extensions list.
+1. `npm run build`
+2. `chrome://extensions` → enable Developer mode → **Load unpacked** → pick `dist/`.
+3. After each rebuild, click the reload icon on the JSnap extension card.
 
----
-
-## Architecture
-
-The codebase is organized in four layers. `core/` contains pure, framework-agnostic modules: error types, storage, settings, logging, platform abstraction, the extraction prompt, the content chunker, the JSON validator, and the orchestration logic. `providers/` contains one file per LLM provider, each self-registering via a shared factory. `background/` contains the MV3 service worker, which is the only layer that reads API keys and calls providers. `popup/` and `options/` are Preact applications that communicate with the background worker exclusively through a versioned message protocol.
-
-Cross-layer imports flow downward only — `popup` and `options` may import from `core`; `core` never imports from `providers`, `background`, or the UI. This rule is enforced in CI.
-
-For the full interface specification — message schemas, provider contract, storage schema, prompt versioning — see [PLAN.md](PLAN.md).
+Architecture, module boundaries, and the message contract between popup / options / content / background all live in [PLAN.md](PLAN.md). It's the binding spec — read it before you open a PR.
 
 ---
 
 ## Roadmap
 
-**v0.1.0** — shipped. Core extraction pipeline, four providers, five locales, light/dark themes, WCAG AA, options page.
+Real candidates for the next few versions:
 
-**v0.2.0 ideas (not committed):**
+- Direct export to `.json` file (skip copy-paste).
+- Saved presets (a hint plus mode combo you reuse often).
+- "Extract selection" from the page context menu.
+- Firefox port — the platform shim is already in place.
+- More heading patterns for the `<pre>` fallback. If you find a page that fails, open an issue with the URL and I'll add a rule.
 
-- Export extracted JSON directly to Notion, Google Sheets, or Airtable.
-- Saved extraction presets (reusable hints for common page types).
-- Firefox port (the `src/core/platform.js` shim is the primary change point).
-- Extraction history with local sync across devices.
+What won't ship:
+
+- A cloud dashboard.
+- A paid tier that gates core extraction.
+- Telemetry of any kind.
 
 ---
 
 ## Contributing
 
-Please read [CONTRIBUTING.md](CONTRIBUTING.md) before opening a pull request. By participating you agree to abide by the [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).
+Issues and PRs welcome. Please read [CONTRIBUTING.md](CONTRIBUTING.md) before opening a PR — it's short. For significant changes, open an issue first so we can agree on the shape before you spend time on code.
 
-Issues and pull requests are welcome. For significant changes, open an issue first to discuss the approach.
+By participating you agree to abide by the [Code of Conduct](CODE_OF_CONDUCT.md).
 
 ---
 
-## Sponsorship
+## Support the project
 
-JSnap is free to use and will remain free. If it saves you time, consider supporting ongoing development:
+JSnap is free to use and always will be. If it saves you time and you want to send a coffee my way, it's genuinely appreciated:
 
 - [Buy Me a Coffee](https://buymeacoffee.com/karimali)
 - [GitHub Sponsors](https://github.com/sponsors/KarimElhakim)
@@ -192,8 +224,8 @@ JSnap is free to use and will remain free. If it saves you time, consider suppor
 
 ## License
 
-MIT License. Copyright 2026 Karim Elhakim. See [LICENSE](LICENSE) for the full text.
+MIT. Copyright 2026 Karim Elhakim. See [LICENSE](LICENSE) for the full text.
 
 ---
 
-<div align="center">Made with care. No ads. No tracking.</div>
+<div align="center">Built by <a href="https://github.com/KarimElhakim">Karim Elhakim</a>. No ads. No tracking. No cloud.</div>
