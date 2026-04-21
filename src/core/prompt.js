@@ -156,7 +156,15 @@ const SECTION_SYSTEM_PROMPT = [
   '9. Output MUST be pure JSON valid against RFC 8259.',
 ].join('\n');
 
-function formatSectionUserMessage({ pageTitle, pageUrl, userHint, sectionHeading, sectionText, sectionIndex, sectionTotal }) {
+function formatSectionUserMessage({
+  pageTitle,
+  pageUrl,
+  userHint,
+  sectionHeading,
+  sectionText,
+  sectionIndex,
+  sectionTotal,
+}) {
   const lines = [];
   if (pageTitle) lines.push(`DOCUMENT TITLE: ${pageTitle}`);
   if (pageUrl) lines.push(`DOCUMENT URL: ${pageUrl}`);
@@ -176,7 +184,15 @@ function formatSectionUserMessage({ pageTitle, pageUrl, userHint, sectionHeading
  * Build a prompt for a single section. Used by the section-wise extractor
  * when Structure mode is applied to long documents.
  */
-export function buildSectionPrompt({ pageTitle, pageUrl, userHint, sectionHeading, sectionText, sectionIndex, sectionTotal }) {
+export function buildSectionPrompt({
+  pageTitle,
+  pageUrl,
+  userHint,
+  sectionHeading,
+  sectionText,
+  sectionIndex,
+  sectionTotal,
+}) {
   return {
     system: SECTION_SYSTEM_PROMPT,
     user: formatSectionUserMessage({

@@ -236,7 +236,9 @@ textarea {
   padding: 6px 8px;
   border-radius: calc(var(--radius-sm) - 2px);
   cursor: pointer;
-  transition: background 0.15s ease, color 0.15s ease;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
 }
 
 .segmented__option:hover:not(:disabled):not(.segmented__option--active) {

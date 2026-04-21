@@ -55,7 +55,9 @@ export function StatusBar({ phase, progress, error }) {
       >
         <span>{t(i18nKey)}</span>
         {detail && (
-          <span style={{ fontSize: '10.5px', fontWeight: 400, opacity: 0.8, fontFamily: 'monospace' }}>
+          <span
+            style={{ fontSize: '10.5px', fontWeight: 400, opacity: 0.8, fontFamily: 'monospace' }}
+          >
             {error.code}: {detail}
           </span>
         )}
@@ -67,19 +69,34 @@ export function StatusBar({ phase, progress, error }) {
     const baseLabel = STAGE_LABELS[progress.stage] ?? t('popup_extracting');
     const sectionLine =
       progress.sectionIndex && progress.sectionTotal
-        ? t('popup_section_progress').replace('$1', progress.sectionIndex).replace('$2', progress.sectionTotal)
+        ? t('popup_section_progress')
+            .replace('$1', progress.sectionIndex)
+            .replace('$2', progress.sectionTotal)
         : null;
     const pct = progress.pct ?? 0;
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
         <span style={{ fontSize: '11px', color: 'var(--color-text-muted)' }}>{baseLabel}</span>
         {sectionLine && (
-          <span style={{ fontSize: '10.5px', color: 'var(--color-text-muted)', fontFamily: 'monospace' }}>
+          <span
+            style={{
+              fontSize: '10.5px',
+              color: 'var(--color-text-muted)',
+              fontFamily: 'monospace',
+            }}
+          >
             {sectionLine}
             {progress.sectionHeading ? ` — ${progress.sectionHeading}` : ''}
           </span>
         )}
-        <div style={{ height: '3px', background: 'var(--color-border)', borderRadius: '99px', overflow: 'hidden' }}>
+        <div
+          style={{
+            height: '3px',
+            background: 'var(--color-border)',
+            borderRadius: '99px',
+            overflow: 'hidden',
+          }}
+        >
           <div
             style={{
               height: '100%',

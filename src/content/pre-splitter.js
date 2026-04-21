@@ -103,7 +103,10 @@ function detectPrefixHeading(line) {
 
 function toBlocks(lines) {
   const joined = lines.join('\n').replace(/[ \t]+$/gm, '');
-  const paragraphs = joined.split(/\n{2,}/).map((p) => p.replace(/^\n+|\n+$/g, '')).filter(Boolean);
+  const paragraphs = joined
+    .split(/\n{2,}/)
+    .map((p) => p.replace(/^\n+|\n+$/g, ''))
+    .filter(Boolean);
   const blocks = [];
   for (const para of paragraphs) {
     // Preserve ASCII-art / aligned content as a code block when it looks tabular.
@@ -126,7 +129,10 @@ function isLikelyAsciiBlock(text) {
 }
 
 function collapseInlineWhitespace(text) {
-  return text.replace(/[ \t]+/g, ' ').replace(/\n +/g, '\n').trim();
+  return text
+    .replace(/[ \t]+/g, ' ')
+    .replace(/\n +/g, '\n')
+    .trim();
 }
 
 function nestByLevel(flat) {

@@ -59,7 +59,8 @@ export function extractStructured(doc) {
   return {
     title: (doc.title ?? '').trim(),
     url: doc.location?.href ?? '',
-    description: doc.querySelector('meta[name="description"]')?.getAttribute('content')?.trim() ?? null,
+    description:
+      doc.querySelector('meta[name="description"]')?.getAttribute('content')?.trim() ?? null,
     language: doc.documentElement?.lang?.trim() || null,
     sections,
     __meta: {
@@ -77,10 +78,22 @@ function prepareDocumentClone(doc) {
   const clone = doc.cloneNode(true);
 
   const STRIP = [
-    'script', 'style', 'noscript', 'svg', 'template', 'iframe',
-    'nav', 'aside', 'footer', 'header',
-    '[role="navigation"]', '[role="banner"]', '[role="contentinfo"]', '[role="complementary"]',
-    '[hidden]', '[aria-hidden="true"]',
+    'script',
+    'style',
+    'noscript',
+    'svg',
+    'template',
+    'iframe',
+    'nav',
+    'aside',
+    'footer',
+    'header',
+    '[role="navigation"]',
+    '[role="banner"]',
+    '[role="contentinfo"]',
+    '[role="complementary"]',
+    '[hidden]',
+    '[aria-hidden="true"]',
   ];
   for (const selector of STRIP) {
     clone.querySelectorAll(selector).forEach((el) => el.remove());
@@ -243,11 +256,17 @@ function summarise(sections, endedAt, startedAt) {
     for (const sub of section.subsections) walk(sub);
   }
   for (const s of sections) walk(s);
-  return { sections: sectionCount, blocks: blockCount, characters, elapsedMs: Math.round(endedAt - startedAt) };
+  return {
+    sections: sectionCount,
+    blocks: blockCount,
+    characters,
+    elapsedMs: Math.round(endedAt - startedAt),
+  };
 }
 
 function measureBlock(block) {
-  if (block.type === 'paragraph' || block.type === 'quote' || block.type === 'code') return block.text.length;
+  if (block.type === 'paragraph' || block.type === 'quote' || block.type === 'code')
+    return block.text.length;
   if (block.type === 'list') return block.items.join(' ').length;
   if (block.type === 'table') {
     const header = (block.headers ?? []).join(' ').length;

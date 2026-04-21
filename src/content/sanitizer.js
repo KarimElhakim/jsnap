@@ -128,7 +128,9 @@ function aggressivePass(doc) {
   });
 
   const body = clone.body ?? clone;
-  return extractText(body).replace(/\n{3,}/g, '\n\n').trim();
+  return extractText(body)
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
 }
 
 function lightPass(doc) {
@@ -137,7 +139,10 @@ function lightPass(doc) {
   removeAll(clone, 'iframe');
   const body = clone.body ?? clone;
   const raw = body.innerText ?? body.textContent ?? '';
-  return raw.replace(/[ \t]+\n/g, '\n').replace(/\n{3,}/g, '\n\n').trim();
+  return raw
+    .replace(/[ \t]+\n/g, '\n')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
 }
 
 /**

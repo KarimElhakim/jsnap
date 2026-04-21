@@ -16,7 +16,13 @@
  * `complete()` calls.
  */
 
-import { buildExtractionPrompt, buildSectionPrompt, PROMPT_VERSION, MODES, DEFAULT_MODE } from './prompt.js';
+import {
+  buildExtractionPrompt,
+  buildSectionPrompt,
+  PROMPT_VERSION,
+  MODES,
+  DEFAULT_MODE,
+} from './prompt.js';
 import { chunk, estimateTokens, splitBySections } from './chunker.js';
 import { validateAndParse } from './validator.js';
 import { ERROR_CODES, ContentTooLargeError, CancelledError } from './errors.js';
@@ -50,15 +56,40 @@ export async function extract(args) {
     const totalTokens = estimateTokens(pageText);
     if (sections.length >= 2 && totalTokens > SINGLE_SHOT_TOKEN_CEILING) {
       return sectionwiseExtract({
-        provider, pageTitle, pageUrl, userHint, mode, signal, onProgress, sections,
+        provider,
+        pageTitle,
+        pageUrl,
+        userHint,
+        mode,
+        signal,
+        onProgress,
+        sections,
       });
     }
   }
 
-  return singleShotExtract({ provider, pageText, pageTitle, pageUrl, userHint, mode, signal, onProgress });
+  return singleShotExtract({
+    provider,
+    pageText,
+    pageTitle,
+    pageUrl,
+    userHint,
+    mode,
+    signal,
+    onProgress,
+  });
 }
 
-async function singleShotExtract({ provider, pageText, pageTitle, pageUrl, userHint, mode, signal, onProgress }) {
+async function singleShotExtract({
+  provider,
+  pageText,
+  pageTitle,
+  pageUrl,
+  userHint,
+  mode,
+  signal,
+  onProgress,
+}) {
   const providerMax = provider.maxInputTokens ?? 8_000;
   const chunks = chunk(pageText, { maxTokens: providerMax });
 
@@ -66,8 +97,10 @@ async function singleShotExtract({ provider, pageText, pageTitle, pageUrl, userH
 
   const results = [];
   for (let i = 0; i < chunks.length; i += 1) {
-    if (signal?.aborted) throw new CancelledError(ERROR_CODES.CANCELLED, 'Cancelled during extraction');
-    const chunkText = chunks.length > 1 ? `(Chunk ${i + 1} of ${chunks.length})\n\n${chunks[i]}` : chunks[i];
+    if (signal?.aborted)
+      throw new CancelledError(ERROR_CODES.CANCELLED, 'Cancelled during extraction');
+    const chunkText =
+      chunks.length > 1 ? `(Chunk ${i + 1} of ${chunks.length})\n\n${chunks[i]}` : chunks[i];
 
     if (estimateTokens(chunkText) > providerMax) {
       throw new ContentTooLargeError(
@@ -77,7 +110,13 @@ async function singleShotExtract({ provider, pageText, pageTitle, pageUrl, userH
       );
     }
 
-    const prompt = buildExtractionPrompt({ pageText: chunkText, pageTitle, pageUrl, userHint, mode });
+    const prompt = buildExtractionPrompt({
+      pageText: chunkText,
+      pageTitle,
+      pageUrl,
+      userHint,
+      mode,
+    });
     const response = await provider.complete({
       system: prompt.system,
       user: prompt.user,
@@ -94,12 +133,22 @@ async function singleShotExtract({ provider, pageText, pageTitle, pageUrl, userH
   return stampMeta(merged, { pageUrl, userHint, mode, providerId: provider.constructor.id });
 }
 
-async function sectionwiseExtract({ provider, pageTitle, pageUrl, userHint, mode, signal, onProgress, sections }) {
+async function sectionwiseExtract({
+  provider,
+  pageTitle,
+  pageUrl,
+  userHint,
+  mode,
+  signal,
+  onProgress,
+  sections,
+}) {
   const total = sections.length;
   const results = [];
 
   for (let i = 0; i < total; i += 1) {
-    if (signal?.aborted) throw new CancelledError(ERROR_CODES.CANCELLED, 'Cancelled during extraction');
+    if (signal?.aborted)
+      throw new CancelledError(ERROR_CODES.CANCELLED, 'Cancelled during extraction');
     const section = sections[i];
 
     onProgress?.({
@@ -138,7 +187,13 @@ async function sectionwiseExtract({ provider, pageTitle, pageUrl, userHint, mode
     sections: results,
   };
 
-  return stampMeta(merged, { pageUrl, userHint, mode, providerId: provider.constructor.id, sectionCount: total });
+  return stampMeta(merged, {
+    pageUrl,
+    userHint,
+    mode,
+    providerId: provider.constructor.id,
+    sectionCount: total,
+  });
 }
 
 function mergeSingleShotResults(results) {
