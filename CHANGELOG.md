@@ -6,6 +6,36 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-04-21
+
+### Added
+
+- **Auto-download for keyboard and context-menu triggers.** Pressing `Alt+J` or using the right-click menu now saves the JSON file directly via Chrome's **Save As** dialog. No popup round-trip. A system notification confirms the save.
+- **"Save as Markdown" button** in the result view as a first-class action next to "Save as JSON" and "Copy". The previous hidden format toggle is gone — both buttons are always visible and do what they say.
+- **Markdown preview expander** in the result view so you can inspect the Markdown rendering before saving it.
+- **"downloads"** and **"notifications"** permissions so saves use the native Save As dialog and confirm success.
+- `src/core/download.js` — unified download helper used by popup, history, and background. One code path for filename derivation, format conversion, and the Chrome downloads API.
+
+### Changed
+
+- **"Snap all tabs" now produces one JSON file per tab.** Previously it returned a single bundle containing every tab's data, which is not what most people want. New behavior: each tab's content is saved as its own `<slug>-<date>.json`, all grouped into one automatically-created subfolder `Downloads/jsnap-batch-<timestamp>/`. A single notification summarises the result (`Saved 8 of 10 tabs`). No N-dialog spam, no shared clobbering.
+- **Filenames always derive from the page title**, not from internal IDs. The previous `jsnap-<uuid>.json` from the History panel is gone — you now always get `jsnap-<slugified-page-title>-<date>.json`.
+- **Context-menu labels are plain English**:
+  - "Save this page as JSON" (on any page)
+  - "Save selected text as JSON" (when text is highlighted)
+  The `(JSnap)` suffix and the word "Extract" are gone. Simpler, clearer.
+- **License changed from MIT to GPL-3.0-only.** JSnap is still free and open-source — you can use, read, fork, and modify it. But any redistributed derivative must also be GPL-3.0 with source available. This prevents closed-source repackaging and resale. See README for details.
+
+### Removed
+
+- `PLAN.md`, `PROGRESS.md`, `.github/agent-log/` — internal development documents that did not belong in the public repository.
+- `scripts/chrome-web-store-checklist.md` — moved to local notes.
+- The implicit JSON/Markdown format toggle in the result view. Replaced by two explicit buttons.
+
+### Security
+
+- Audited the repository for committed secrets (API keys, tokens, `.env` files). None found.
+
 ## [0.3.0] - 2026-04-21
 
 ### Added
@@ -114,7 +144,8 @@ v0.1.x treated the LLM as the primary extractor. For the main use case ("transla
 - Settings page for provider selection, model selection, and API-key management.
 - MIT license, Buy Me a Coffee and GitHub Sponsors support links.
 
-[Unreleased]: https://github.com/KarimElhakim/jsnap/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/KarimElhakim/jsnap/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/KarimElhakim/jsnap/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/KarimElhakim/jsnap/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/KarimElhakim/jsnap/compare/v0.1.2...v0.2.0
 [0.1.2]: https://github.com/KarimElhakim/jsnap/compare/v0.1.1...v0.1.2

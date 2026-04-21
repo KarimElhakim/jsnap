@@ -37,6 +37,9 @@
   "popup_result_title": { "message": "النتيجة" },
   "popup_result_copy": { "message": "نسخ" },
   "popup_result_download": { "message": "تنزيل" },
+  "popup_result_save_json": { "message": "حفظ كـ JSON" },
+  "popup_result_save_md": { "message": "حفظ كـ Markdown" },
+  "popup_result_preview_md": { "message": "معاينة Markdown" },
   "popup_result_copied": { "message": "تم النسخ!" },
 
   "popup_usage_today": { "message": "اليوم: $1 طلب" },

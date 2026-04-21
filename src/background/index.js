@@ -2,10 +2,9 @@
  * JSnap background service worker.
  *
  * Composition root: wires message router, keyboard commands, and context
- * menus to the extractor pipeline. MV3 service workers can be evicted
- * between messages, so no durable state lives at module scope beyond the
- * abort-controller map (which is fine because an eviction cancels anything
- * it owned).
+ * menus to the extractor pipeline and the download helper. MV3 service
+ * workers can be evicted between messages, so no durable state lives at
+ * module scope beyond the abort-controller map.
  */
 
 import { Platform } from '../core/platform.js';
@@ -14,6 +13,7 @@ import { Storage } from '../core/storage.js';
 import { History } from '../core/history.js';
 import { extract } from '../core/extractor.js';
 import { logger } from '../core/logger.js';
+import { downloadResult } from '../core/download.js';
 import { createDispatcher, MESSAGE_TYPES, message } from './router.js';
 import { createProvider, listProviders } from '../providers/factory.js';
 import { ERROR_CODES, ConfigError, JSnapError, toJSnapError } from '../core/errors.js';
@@ -84,6 +84,7 @@ on(MESSAGE_TYPES.EXTRACT_ALL_TABS, async (payload) => {
 async function runExtraction({ tabId, providerId, hint, mode, requestId, selectionText }) {
   const controller = new AbortController();
   inFlight.set(requestId, controller);
+  const autoDownload = requestId.startsWith('kb_') || requestId.startsWith('ctx_');
 
   const push = (type, extra) => {
     Platform.runtime.sendMessage(message(type, { requestId, ...extra })).catch(() => {});
@@ -101,37 +102,48 @@ async function runExtraction({ tabId, providerId, hint, mode, requestId, selecti
       );
     }
 
+    let data;
     if (mode === 'raw') {
       push(MESSAGE_TYPES.EXTRACT_PROGRESS, { stage: 'thinking', pct: 0.5 });
-      const result = await fetchStructuredContent(tabId);
-      if (selectionText) narrowToSelection(result, selectionText);
+      data = await fetchStructuredContent(tabId);
+      if (selectionText) narrowToSelection(data, selectionText);
       push(MESSAGE_TYPES.EXTRACT_PROGRESS, { stage: 'parsing', pct: 0.95 });
-      await saveToHistory(result);
-      push(MESSAGE_TYPES.EXTRACT_RESULT, { ok: true, data: result });
-      return;
+    } else {
+      const page = await fetchPageContent(tabId);
+      const pageText = selectionText || page.text;
+      const providerConfig = (await Settings.getProviderConfig(providerId)) ?? {};
+      const provider = createProvider(providerId, providerConfig);
+      data = await extract({
+        provider,
+        pageText,
+        pageTitle: page.title,
+        pageUrl: page.url,
+        userHint: hint,
+        mode,
+        signal: controller.signal,
+        onProgress: (evt) => push(MESSAGE_TYPES.EXTRACT_PROGRESS, evt),
+      });
+      const calls = Number(data?.__meta?.apiCalls) || 1;
+      await Settings.incrementUsage(providerId, calls);
     }
 
-    const page = await fetchPageContent(tabId);
-    const pageText = selectionText || page.text;
+    await saveToHistory(data);
 
-    const providerConfig = (await Settings.getProviderConfig(providerId)) ?? {};
-    const provider = createProvider(providerId, providerConfig);
+    if (autoDownload) {
+      try {
+        await downloadResult(data, { format: 'json', saveAs: true });
+        Platform.notifications.create({
+          type: 'basic',
+          iconUrl: Platform.runtime.getURL('icons/icon-128.png'),
+          title: 'JSnap',
+          message: `Saved: ${data?.title ?? tab?.title ?? 'page'}`,
+        });
+      } catch (err) {
+        logger.warn('Auto-download failed', err);
+      }
+    }
 
-    const result = await extract({
-      provider,
-      pageText,
-      pageTitle: page.title,
-      pageUrl: page.url,
-      userHint: hint,
-      mode,
-      signal: controller.signal,
-      onProgress: (evt) => push(MESSAGE_TYPES.EXTRACT_PROGRESS, evt),
-    });
-
-    const calls = Number(result?.__meta?.apiCalls) || 1;
-    await Settings.incrementUsage(providerId, calls);
-    await saveToHistory(result);
-    push(MESSAGE_TYPES.EXTRACT_RESULT, { ok: true, data: result });
+    push(MESSAGE_TYPES.EXTRACT_RESULT, { ok: true, data });
   } catch (err) {
     if (err?.name === 'AbortError') {
       push(MESSAGE_TYPES.EXTRACT_RESULT, {
@@ -163,7 +175,10 @@ async function runAllTabsExtraction(requestId) {
       throw new JSnapError(ERROR_CODES.CONTENT_EMPTY, 'No eligible tabs to extract.');
     }
 
-    const archive = [];
+    const folder = `jsnap-batch-${new Date().toISOString().replace(/[:]/g, '-').slice(0, 19)}`;
+    const summary = [];
+    let savedCount = 0;
+
     for (let i = 0; i < total; i += 1) {
       const tab = eligible[i];
       push(MESSAGE_TYPES.EXTRACT_PROGRESS, {
@@ -175,31 +190,38 @@ async function runAllTabsExtraction(requestId) {
       });
       try {
         const data = await fetchStructuredContent(tab.id);
-        archive.push({ tabId: tab.id, title: tab.title, url: tab.url, data });
+        await saveToHistory(data);
+        await downloadResult(data, { format: 'json', saveAs: false, prefix: folder });
+        summary.push({ title: tab.title, url: tab.url, ok: true });
+        savedCount += 1;
       } catch (err) {
-        archive.push({
-          tabId: tab.id,
+        summary.push({
           title: tab.title,
           url: tab.url,
+          ok: false,
           error: String(err?.message ?? err),
         });
       }
     }
 
-    const bundle = {
-      kind: 'jsnap-tab-archive',
-      capturedAt: new Date().toISOString(),
-      tabCount: total,
-      tabs: archive,
-      __meta: { schemaVersion: '2.1', mode: 'raw-all-tabs' },
-    };
-    await saveToHistory({
-      title: `All tabs (${total})`,
-      url: null,
-      ...bundle,
-      __meta: { ...bundle.__meta, providerId: null, apiCalls: 0 },
+    Platform.notifications.create({
+      type: 'basic',
+      iconUrl: Platform.runtime.getURL('icons/icon-128.png'),
+      title: 'JSnap',
+      message: `Saved ${savedCount} of ${total} tabs into Downloads/${folder}/`,
     });
-    push(MESSAGE_TYPES.EXTRACT_RESULT, { ok: true, data: bundle });
+
+    push(MESSAGE_TYPES.EXTRACT_RESULT, {
+      ok: true,
+      data: {
+        kind: 'jsnap-batch-summary',
+        folder,
+        savedCount,
+        totalCount: total,
+        tabs: summary,
+        __meta: { schemaVersion: '2.1', mode: 'raw-batch' },
+      },
+    });
   } catch (err) {
     const normalized = toJSnapError(err);
     logger.error('All-tabs extraction failed', normalized);
@@ -319,20 +341,20 @@ Platform.commands.onCommand.addListener(async (commandName) => {
 async function registerContextMenus() {
   await Platform.contextMenus.removeAll();
   Platform.contextMenus.create({
-    id: 'jsnap-extract-page',
-    title: 'Extract page to JSON (JSnap)',
+    id: 'jsnap-save-page',
+    title: 'Save this page as JSON',
     contexts: ['page'],
   });
   Platform.contextMenus.create({
-    id: 'jsnap-extract-selection',
-    title: 'Extract selection to JSON (JSnap)',
+    id: 'jsnap-save-selection',
+    title: 'Save selected text as JSON',
     contexts: ['selection'],
   });
 }
 
 Platform.contextMenus.onClicked.addListener((info, tab) => {
   if (!tab?.id) return;
-  const selectionText = info.menuItemId === 'jsnap-extract-selection' ? info.selectionText : null;
+  const selectionText = info.menuItemId === 'jsnap-save-selection' ? info.selectionText : null;
   runExtraction({
     tabId: tab.id,
     providerId: null,

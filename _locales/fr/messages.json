@@ -37,6 +37,9 @@
   "popup_result_title": { "message": "Résultat" },
   "popup_result_copy": { "message": "Copier" },
   "popup_result_download": { "message": "Télécharger" },
+  "popup_result_save_json": { "message": "Enregistrer JSON" },
+  "popup_result_save_md": { "message": "Enregistrer Markdown" },
+  "popup_result_preview_md": { "message": "Aperçu Markdown" },
   "popup_result_copied": { "message": "Copié !" },
 
   "popup_usage_today": { "message": "Aujourd'hui : $1 requêtes" },

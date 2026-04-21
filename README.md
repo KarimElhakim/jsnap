@@ -2,8 +2,8 @@
 
 One-click page-to-JSON. Free. Local-first.
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-0.2.0-blue)](package.json)
+[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](LICENSE)
+[![Version](https://img.shields.io/badge/version-0.4.0-blue)](package.json)
 [![CI](https://github.com/KarimElhakim/jsnap/actions/workflows/ci.yml/badge.svg)](https://github.com/KarimElhakim/jsnap/actions/workflows/ci.yml)
 [![Chrome Web Store](https://img.shields.io/badge/Chrome%20Web%20Store-coming%20soon-lightgrey)](https://github.com/KarimElhakim/jsnap/releases)
 [![GitHub stars](https://img.shields.io/github/stars/KarimElhakim/jsnap?style=flat)](https://github.com/KarimElhakim/jsnap/stargazers)
@@ -228,7 +228,9 @@ JSnap is free to use and always will be. If it saves you time and you want to se
 
 ## License
 
-MIT. Copyright 2026 Karim Elhakim. See [LICENSE](LICENSE) for the full text.
+GPL-3.0-only. Copyright 2026 Karim Elhakim. See [LICENSE](LICENSE) for the full text.
+
+This is deliberate. JSnap is free to use, read, study, fork, and modify. If you ship a modified version — as an extension, a service, or anything else — you must ship it under the same GPL-3.0 terms with source available. You cannot take JSnap, close-source your derivative, and sell it as your own product. If you want a different arrangement (for example, to bundle JSnap into a closed-source tool), reach out.
 
 ---
 

@@ -145,4 +145,22 @@ export const Platform = {
       },
     },
   },
+
+  downloads: {
+    download(options) {
+      assertChrome();
+      return promisify((cb) => chromeApi.downloads.download(options, cb));
+    },
+  },
+
+  notifications: {
+    create(options) {
+      if (!chromeApi?.notifications) return;
+      try {
+        chromeApi.notifications.create(options);
+      } catch {
+        /* ignore */
+      }
+    },
+  },
 };

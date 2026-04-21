@@ -3,6 +3,7 @@ import { useEffect } from 'preact/hooks';
 import { Clock, Trash2, RefreshCw } from 'lucide-preact';
 import { Platform } from '../../core/platform.js';
 import { message, MESSAGE_TYPES } from '../../background/router.js';
+import { downloadResult } from '../../core/download.js';
 import { useI18n } from '../hooks/useI18n.js';
 
 const items = signal([]);
@@ -29,14 +30,11 @@ async function clearAll(confirmLabel) {
   await refresh();
 }
 
-function downloadEntry(entry) {
-  const blob = new Blob([JSON.stringify(entry.data, null, 2)], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `jsnap-${entry.id}.json`;
-  a.click();
-  URL.revokeObjectURL(url);
+async function downloadEntry(entry) {
+  await downloadResult(entry.data ?? { title: entry.title, url: entry.url }, {
+    format: 'json',
+    saveAs: true,
+  });
 }
 
 function formatTime(iso) {

@@ -1,10 +1,10 @@
 {
   "name": "jsnap",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "private": true,
   "description": "One-click page-to-JSON. BYOK. Free forever.",
   "author": "Karim Elhakim",
-  "license": "MIT",
+  "license": "GPL-3.0-only",
   "homepage": "https://github.com/KarimElhakim/jsnap#readme",
   "bugs": {
     "url": "https://github.com/KarimElhakim/jsnap/issues"
