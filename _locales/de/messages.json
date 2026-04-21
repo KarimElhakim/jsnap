@@ -7,6 +7,8 @@
   "popup_extract_in_progress": { "message": "Wird extrahiert…" },
   "popup_extracting": { "message": "Extrahiere" },
 
+  "popup_section_progress": { "message": "Abschnitt $1 von $2" },
+
   "popup_mode_label": { "message": "Modus" },
   "popup_mode_structure": { "message": "Struktur" },
   "popup_mode_summary": { "message": "Zusammenfassung" },

@@ -6,6 +6,26 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.1.2] - 2026-04-21
+
+### Added
+
+- **Section-wise extraction for Structure mode.** Long documents (over ~6,000 input tokens with multiple `#`/`##` headings) are now split by heading and processed one section per API call. Results merge into `{ title, sections: [...], __meta }`. This removes the previous truncation ceiling — the full text of guides, walkthroughs, and long docs now round-trips intact regardless of length.
+- `splitBySections(text)` utility in `core/chunker.js` — markdown-ish heading splitter used by the section-wise path.
+- `buildSectionPrompt(...)` in `core/prompt.js` — a tightly-scoped prompt that covers exactly one section at a time and bans summarization/paraphrasing at the per-section level.
+- Per-section progress in the popup: "Section 14 of 47 — Chapter Name" updates live as each section is processed.
+- `__meta.sectionCount` on section-wise results.
+
+### Changed
+
+- `providers/gemini.js` raised `maxOutputTokens` from 8,192 to 32,768. Gives single-shot calls headroom before the section-wise path engages.
+- Prompt version bumped to `1.2.0`.
+
+### Technical notes
+
+- Section-wise extraction makes N API calls where N = number of top-level headings. On Gemini Flash free tier (10 RPM / 250 RPD) a 50-section document takes ~5 minutes and consumes 50 of your 250 daily requests. Use Groq (30 RPM) for faster throughput.
+- Single-shot path is unchanged for Summary and Data modes and for short Structure documents.
+
 ## [0.1.1] - 2026-04-21
 
 ### Added
@@ -46,6 +66,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Settings page for provider selection, model selection, and API-key management.
 - MIT license, Buy Me a Coffee and GitHub Sponsors support links.
 
-[Unreleased]: https://github.com/KarimElhakim/jsnap/compare/v0.1.1...HEAD
+[Unreleased]: https://github.com/KarimElhakim/jsnap/compare/v0.1.2...HEAD
+[0.1.2]: https://github.com/KarimElhakim/jsnap/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/KarimElhakim/jsnap/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/KarimElhakim/jsnap/releases/tag/v0.1.0

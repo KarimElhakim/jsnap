@@ -3,10 +3,10 @@
  *
  * `PROMPT_VERSION` is stamped into every stored result so regressions can be
  * correlated with prompt changes. Bump it on every meaningful edit to the
- * `SYSTEM_PROMPT` or mode directives below.
+ * `SYSTEM_PROMPT`, section prompt, or mode directives below.
  */
 
-export const PROMPT_VERSION = '1.1.0';
+export const PROMPT_VERSION = '1.2.0';
 
 export const MODES = Object.freeze({
   STRUCTURE: 'structure',
@@ -29,77 +29,57 @@ const BASE_SYSTEM_PROMPT = [
   '   comments. No explanations.',
   '2. Use typed values where unambiguous: numbers, booleans, ISO-8601 date',
   '   strings. When in doubt, use a string.',
-  '3. Never fabricate. If information is not present on the page, omit the key',
-  '   rather than inventing content.',
+  '3. Never fabricate. If information is not present, omit the key rather',
+  '   than inventing content.',
   '4. Include a "__meta" object at the top level with at minimum:',
-  '   { "sourceUrl": "...", "extractedAt": "<ISO-8601>", "userHint": "<hint or null>", "mode": "<mode>" }.',
-  '5. If a user hint is provided, prioritize content matching the hint and omit',
-  '   unrelated content. Interpret the hint liberally. Never refuse; always',
-  '   return your best-effort JSON.',
-  '6. Ignore these kinds of content unless the hint explicitly asks for them:',
-  '   site navigation, ads, cookie banners, author bios, "related posts",',
-  '   social-share widgets, comment sections, footer boilerplate, legal',
-  '   disclaimers.',
+  '   { "sourceUrl", "extractedAt", "userHint", "mode" }.',
+  '5. If a user hint is provided, prioritize content matching the hint and',
+  '   omit unrelated content. Interpret the hint liberally.',
+  '6. Ignore ads, cookie banners, author bios, "related posts", social-share',
+  '   widgets, comment sections, footer boilerplate, legal disclaimers.',
   '7. Output MUST be pure JSON valid against RFC 8259.',
 ].join('\n');
 
 const MODE_DIRECTIVES = {
   [MODES.STRUCTURE]: [
     '',
-    'MODE: STRUCTURE (default) — preserve all meaningful content, organize it.',
-    '',
-    'STRUCTURE RULES:',
-    '- Do NOT summarize. Do NOT paraphrase. Do NOT condense.',
-    '- Preserve ALL meaningful text verbatim. The reader wants a lossless,',
-    '  structured version of the page, not a digest of it.',
-    '- Organize the content into a hierarchy of sections that mirrors the page:',
-    '  - Use the actual section headings from the page as keys when present.',
-    '  - For long-form content (articles, guides, walkthroughs, manuals,',
-    '    tutorials, documentation), the output must contain the full text of',
-    '    each section under a descriptive key.',
-    '  - Preserve ordering where it conveys meaning (steps, chapters, timelines).',
-    '- Tables become arrays of row objects keyed by column headers.',
-    '- Lists become JSON arrays.',
-    '- Code blocks (delimited by ``` in the input) are preserved verbatim as',
-    '  string values under a "code" or similarly-named key.',
-    '- If the page is a single flowing prose document with no visible',
-    '  sub-structure, return: { "title": "...", "sections": [{ "heading": "...", "text": "..." }], ... }',
-    '  where "text" contains the full content of that section verbatim.',
+    'MODE: STRUCTURE — preserve all meaningful content, organize it.',
+    'Do NOT summarize. Do NOT paraphrase. Do NOT condense.',
+    'Preserve ALL meaningful text verbatim. The reader wants a lossless,',
+    'structured version of the page, not a digest of it.',
+    'Organize content into sections keyed by the actual headings from the page.',
+    'Tables → arrays of row objects keyed by column headers.',
+    'Lists → JSON arrays. Code/ASCII-art blocks → string values preserved exactly.',
   ].join('\n'),
 
   [MODES.SUMMARY]: [
     '',
     'MODE: SUMMARY — condense the page into key points.',
-    '',
-    'SUMMARY RULES:',
-    '- Produce a compact digest. You MAY (and should) paraphrase and shorten.',
-    '- Always include: { "title", "summary" (1-3 sentence overview), "keyPoints" (array of short strings) }.',
-    '- Add typed fields when the domain suggests them (e.g. "author", "publishedAt",',
-    '  "price", "rating", "topics").',
-    '- Target output size: roughly 10-20% of the input length.',
+    'You MAY paraphrase and shorten.',
+    'Always include: { "title", "summary" (1-3 sentence overview), "keyPoints" (array) }.',
+    'Add typed fields when the domain suggests them.',
+    'Target output size: 10-20% of input length.',
   ].join('\n'),
 
   [MODES.DATA]: [
     '',
     'MODE: DATA — extract structured data only, drop narrative prose.',
-    '',
-    'DATA RULES:',
-    '- Return ONLY tables, specifications, lists, product info, prices, dates,',
-    '  quantities, ratings, contact details, or other discretely structured data.',
-    '- Drop all narrative prose. If a paragraph cannot be represented as a',
-    '  typed field or a row, ignore it.',
-    '- Tables become arrays of row objects keyed by column headers.',
-    '- If the page contains no structured data at all, return:',
-    '  { "hasStructuredData": false, "__meta": { ... } }.',
+    'Return ONLY tables, specifications, lists, product info, prices, dates,',
+    'quantities, ratings, contact details, or other discretely structured data.',
+    'If no structured data exists, return { "hasStructuredData": false }.',
   ].join('\n'),
 };
 
+/**
+ * System prompt for when the ENTIRE page fits in one call (short pages,
+ * Summary mode, Data mode). For long-form Structure-mode extractions we use
+ * `buildSectionSystemPrompt` instead and call per-section.
+ */
 export function buildSystemPrompt(mode = DEFAULT_MODE) {
   const directive = MODE_DIRECTIVES[mode] ?? MODE_DIRECTIVES[DEFAULT_MODE];
   return BASE_SYSTEM_PROMPT + directive;
 }
 
-// Exported for backwards compatibility and tests.
 export const SYSTEM_PROMPT = buildSystemPrompt(DEFAULT_MODE);
 
 function formatUserMessage({ pageTitle, pageUrl, pageText, userHint, mode }) {
@@ -125,7 +105,6 @@ function formatUserMessage({ pageTitle, pageUrl, pageText, userHint, mode }) {
  * @param {string} [args.pageUrl]
  * @param {string | null} [args.userHint]
  * @param {'structure' | 'summary' | 'data'} [args.mode]
- * @returns {{ system: string, user: string, responseFormat: { type: 'json_object' }, mode: string }}
  */
 export function buildExtractionPrompt({ pageText, pageTitle, pageUrl, userHint, mode }) {
   const resolvedMode = MODES[String(mode ?? '').toUpperCase()] ? mode : DEFAULT_MODE;
@@ -140,5 +119,73 @@ export function buildExtractionPrompt({ pageText, pageTitle, pageUrl, userHint, 
     }),
     responseFormat: { type: 'json_object' },
     mode: resolvedMode,
+  };
+}
+
+/* ── Section-wise extraction (Structure mode, long documents) ──────────── */
+
+const SECTION_SYSTEM_PROMPT = [
+  'You are JSnap, a precision section-to-JSON extractor. You receive exactly',
+  'ONE section from a larger web document. Your job is to return a JSON object',
+  'representing this section with ALL of its content preserved verbatim.',
+  '',
+  'RULES (non-negotiable):',
+  '1. Return ONLY a JSON object. No code fences. No prose before or after.',
+  '2. Preserve the FULL text of this section. Do NOT summarize, shorten, or',
+  '   paraphrase. Verbatim preservation is the entire point.',
+  '3. Output shape:',
+  '   {',
+  '     "heading": "<the section heading exactly as provided>",',
+  '     "content": "<full prose text, verbatim>",',
+  '     "lists": [[...], ...],            // arrays of string items if any lists appear',
+  '     "tables": [[{col: val, ...}], ...],// arrays of row objects if any tables appear',
+  '     "code": ["<raw block>", ...],     // preserve code/ASCII-art exactly',
+  '     "subsections": [{ "heading": "...", "content": "..." }, ...]',
+  '   }',
+  '   Include only the keys that apply. Always include "heading" and at least',
+  '   one of "content" / "lists" / "tables" / "code" / "subsections".',
+  '4. If the section has clear internal sub-structure (e.g. ### subheadings),',
+  '   nest them under "subsections" following the same shape.',
+  '5. Tables become arrays of row objects keyed by column headers.',
+  '6. Code blocks delimited by ``` in the input are preserved EXACTLY in "code".',
+  '7. If a user hint is provided, prioritize matching content and trim the',
+  '   rest — but never invent content.',
+  '8. Never fabricate. Never omit content except pure boilerplate.',
+  '9. Output MUST be pure JSON valid against RFC 8259.',
+].join('\n');
+
+function formatSectionUserMessage({ pageTitle, pageUrl, userHint, sectionHeading, sectionText, sectionIndex, sectionTotal }) {
+  const lines = [];
+  if (pageTitle) lines.push(`DOCUMENT TITLE: ${pageTitle}`);
+  if (pageUrl) lines.push(`DOCUMENT URL: ${pageUrl}`);
+  lines.push(`SECTION ${sectionIndex} OF ${sectionTotal}: ${sectionHeading}`);
+  lines.push(userHint ? `USER HINT: ${userHint}` : 'USER HINT: (none)');
+  lines.push('');
+  lines.push('SECTION CONTENT:');
+  lines.push('---');
+  lines.push(sectionText);
+  lines.push('---');
+  lines.push('');
+  lines.push('Return the JSON object for this section now. Preserve ALL content.');
+  return lines.join('\n');
+}
+
+/**
+ * Build a prompt for a single section. Used by the section-wise extractor
+ * when Structure mode is applied to long documents.
+ */
+export function buildSectionPrompt({ pageTitle, pageUrl, userHint, sectionHeading, sectionText, sectionIndex, sectionTotal }) {
+  return {
+    system: SECTION_SYSTEM_PROMPT,
+    user: formatSectionUserMessage({
+      pageTitle: pageTitle ?? '',
+      pageUrl: pageUrl ?? '',
+      userHint: (userHint ?? '').trim() || null,
+      sectionHeading: sectionHeading ?? '(untitled)',
+      sectionText: sectionText ?? '',
+      sectionIndex,
+      sectionTotal,
+    }),
+    responseFormat: { type: 'json_object' },
   };
 }

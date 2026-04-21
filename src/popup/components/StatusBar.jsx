@@ -64,19 +64,22 @@ export function StatusBar({ phase, progress, error }) {
   }
 
   if (phase === 'extracting' && progress?.stage) {
-    const label = STAGE_LABELS[progress.stage] ?? t('popup_extracting');
+    const baseLabel = STAGE_LABELS[progress.stage] ?? t('popup_extracting');
+    const sectionLine =
+      progress.sectionIndex && progress.sectionTotal
+        ? t('popup_section_progress').replace('$1', progress.sectionIndex).replace('$2', progress.sectionTotal)
+        : null;
     const pct = progress.pct ?? 0;
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-        <span style={{ fontSize: '11px', color: 'var(--color-text-muted)' }}>{label}</span>
-        <div
-          style={{
-            height: '3px',
-            background: 'var(--color-border)',
-            borderRadius: '99px',
-            overflow: 'hidden',
-          }}
-        >
+        <span style={{ fontSize: '11px', color: 'var(--color-text-muted)' }}>{baseLabel}</span>
+        {sectionLine && (
+          <span style={{ fontSize: '10.5px', color: 'var(--color-text-muted)', fontFamily: 'monospace' }}>
+            {sectionLine}
+            {progress.sectionHeading ? ` — ${progress.sectionHeading}` : ''}
+          </span>
+        )}
+        <div style={{ height: '3px', background: 'var(--color-border)', borderRadius: '99px', overflow: 'hidden' }}>
           <div
             style={{
               height: '100%',

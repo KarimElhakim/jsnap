@@ -7,6 +7,8 @@
   "popup_extract_in_progress": { "message": "جارٍ الاستخراج…" },
   "popup_extracting": { "message": "يستخرج" },
 
+  "popup_section_progress": { "message": "القسم $1 من $2" },
+
   "popup_mode_label": { "message": "النمط" },
   "popup_mode_structure": { "message": "هيكلة" },
   "popup_mode_summary": { "message": "ملخص" },

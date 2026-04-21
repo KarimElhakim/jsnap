@@ -15,6 +15,42 @@ export function estimateTokens(text) {
 }
 
 /**
+ * Split a markdown-ish text by top-level headings (# and ##).
+ *
+ * Returns `[{ heading, level, text }]`. Text preceding the first heading is
+ * captured as a "(Preamble)" section. Sections whose body is empty after
+ * trimming are dropped.
+ *
+ * This is the primary splitter used by Structure-mode extraction: each
+ * section becomes one API call, which lets us handle arbitrarily long
+ * documents without hitting provider output-token ceilings.
+ */
+export function splitBySections(pageText) {
+  if (!pageText) return [];
+  const lines = pageText.split('\n');
+  const sections = [];
+  let current = { heading: '(Preamble)', level: 0, lines: [] };
+
+  const flush = () => {
+    const text = current.lines.join('\n').trim();
+    if (text) sections.push({ heading: current.heading, level: current.level, text });
+  };
+
+  for (const line of lines) {
+    const match = line.match(/^(#{1,2})\s+(.+?)\s*$/);
+    if (match) {
+      flush();
+      current = { heading: match[2].trim(), level: match[1].length, lines: [] };
+    } else {
+      current.lines.push(line);
+    }
+  }
+  flush();
+
+  return sections;
+}
+
+/**
  * @param {string} pageText
  * @param {{ maxTokens: number, budget?: number }} opts budget defaults to 0.8
  * @returns {string[]} array of chunks; returns `[pageText]` if it fits.

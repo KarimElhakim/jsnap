@@ -7,6 +7,8 @@
   "popup_extract_in_progress": { "message": "Extrayendo…" },
   "popup_extracting": { "message": "Extrayendo" },
 
+  "popup_section_progress": { "message": "Sección $1 de $2" },
+
   "popup_mode_label": { "message": "Modo" },
   "popup_mode_structure": { "message": "Estructura" },
   "popup_mode_summary": { "message": "Resumen" },

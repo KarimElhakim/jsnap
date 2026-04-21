@@ -6,6 +6,7 @@
   "popup_extract_button": { "message": "Extract JSON" },
   "popup_extract_in_progress": { "message": "Extracting…" },
   "popup_extracting": { "message": "Extracting" },
+  "popup_section_progress": { "message": "Section $1 of $2" },
 
   "popup_mode_label": { "message": "Mode" },
   "popup_mode_structure": { "message": "Structure" },

@@ -7,6 +7,8 @@
   "popup_extract_in_progress": { "message": "Extraction en cours…" },
   "popup_extracting": { "message": "Extraction" },
 
+  "popup_section_progress": { "message": "Section $1 sur $2" },
+
   "popup_mode_label": { "message": "Mode" },
   "popup_mode_structure": { "message": "Structure" },
   "popup_mode_summary": { "message": "Résumé" },

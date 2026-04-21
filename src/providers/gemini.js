@@ -61,7 +61,7 @@ export class GeminiProvider extends Provider {
       contents: [{ role: 'user', parts: [{ text: user }] }],
       generationConfig: {
         temperature: 0.2,
-        maxOutputTokens: 8192,
+        maxOutputTokens: 32_768,
         ...(responseFormat?.type === 'json_object' ? { responseMimeType: 'application/json' } : {}),
       },
     };
